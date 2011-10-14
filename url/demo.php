@@ -8,57 +8,71 @@ $trans = new Trans();
 
 $requery = array(
 	'act' => getPost('act'),
-	'id' => getPost('id'),
+	'hasAble' => getPost('hasAble', true),
 );
 
-///aj/getSetSettingRuleDialog?act=add&src=xxx&target=xxx&able=true&context=test&type=css
-
-function requeryHasError() {
-	global $requery, $errorMsg;
-	
-	if(!$requery['act']) {
-		return 'act参数 不能为空';
-	}
-
-	return null;
-	
+if(!$requery['act']) {
+	$errorMsg = 'act参数 不能为空';
 }
 
-$errorMsg = requeryHasError();
-
-if($errorMsg) {
+if(isset($errorMsg)) {
 	$trans->response('100001', null, $errorMsg);
 	exit;
 }
 
 
-$iniData = new iniData();
+///aj/getSetRuleDialog?table=ex&act=edit&id=1
 
-$u = $iniData->getSettingRule($context, $type, $id);
+$errorMsg = flowByKey('act', $requery['act'], array('add', 'edit'));
 
-if($u['code'] == '100000') {
 
-	$u = $u['data'];
+function flow_add() {
+	global $trans, $requery;
 	$data = array(
-		'src' => $u[1]
+		'act' => 'add',
+		'table' => $requery['table'],
+		'able' => true,
+		'hasAble' => true,
 	);
-
 	$tpl = new Page($data);
+	$trans->response('100000', $tpl->fetch('lump/ruleDialog.tpl'), 'ok');
+}
 
-	//var_dump($data);
-	//echo $tpl->fetch('lump/ruleDialog.tpl');
-	//exit;
+function flow_edit() {
+	global $trans, $requery;
 
-}else{
-	$errorMsg = $u['msg'];
+	$iniData = new iniData();
+	$u = $iniData->getRule($requery['table'], $requery['id']);
+
+	if($u['code'] == '100000') {
+
+		$u = $u['data'];
+		$data = array(
+			'src' => $u[1],
+			'target' => $u[2],
+			'able' => $u[3],
+
+			'table' => $requery['table'],
+			'act' => $requery['act'],
+			'hasAble' => $requery['hasAble'],
+			'id' => $requery['id']
+		);
+
+		$tpl = new Page($data);
+		$trans->response('100000', $tpl->fetch('lump/ruleDialog.tpl'), 'ok');
+
+	}else{
+		$trans->response($u);
+	}
+
 }
 
 
 
-if($errorMsg) {
-	$trans->response('100001', null, $errorMsg);
-}else{
-	$trans->response('100000', $tpl->fetch('lump/svnEditDialog.tpl'), 'ok');
-}
+
+
+
+
+
 
 ?>

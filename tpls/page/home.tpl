@@ -55,7 +55,7 @@
 							<a href="#" action-type="editExRuleBtn" action-data="hasAble=true&table=ex&act=edit&id={% $exRuleRow[0] %}">edit</a>&nbsp;
 							<a href="#">file</a>
 						</td>
-						<td><input type="checkbox" value="table=ex&id={% $exRuleRow[0] %}"{% if $exRuleRow[3] %} checked="checked"{% /if %} /></td>
+						<td><input type="checkbox" node-type="ableStatus" value="table=ex&id={% $exRuleRow[0] %}"{% if $exRuleRow[3] %} checked="checked"{% /if %} /></td>
 					</tr>
 				 {% /foreach %}
 				</table>

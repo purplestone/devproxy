@@ -335,43 +335,25 @@ class iniData {
 				$data = &$this->oIni->condition->local->transitionRule->other->localToFile->table;
 				break;
 			default:
-				$r = array(
-					'code' => '100001',	
-					'data' => null,	
-					'msg' => '要查询的表'.$table.'不存在'
-				);
+				$apiMsg = createApiMsg('100000', null, '要查询的表'.$table.'不存在');
 		}
-var_dump($table);
-		if(!isset($r)) {
-			foreach ($data as $key=>$u) {
-				if($u[0] == $id) {
-					$t = &$data->$key;
-					$t[1] = $src;
-					$t[2] = $target;
-					$t[3] = $able;
 
-					$r = array(
-						'code' => '100000',	
-						'data' => null,	
-						'msg' => 'ok'
-					);
-					$this->saveIni();
-
-					break;
-				}
+		if(!isset($apiMsg)) {
+			$u = &getRowById($data, $id);
+			if($u !== null) {
+				$u[1] = $src;
+				$u[2] = $target;
+				$u[3] = $able;
+				$apiMsg = createApiMsg('100000', null, 'ok');
+				$this->saveIni();
 			}
-
 		}
 
-		if(!isset($r)) {
-			$r = array(
-				'code' => '100001',	
-				'data' => null,	
-				'msg' => '在'.$table.'中没有查询到id为'.$id.'的条目'
-			);
+		if(!isset($apiMsg)) {
+			$apiMsg = createApiMsg('100000', null, '在'.$table.'中没有查询到id为'.$id.'的条目');
 		}
 
-		return $r;
+		return $apiMsg;
 	}
 
 	public function getSettingRule($context, $type, $id) {
