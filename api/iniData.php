@@ -89,7 +89,7 @@ class iniData {
 	}
 	
 	public function getRule($table, $id) {
-		if(!$id) {
+		if(!$id && $id !== '0') {
 			$apiMsg = createApiMsg('100001', null, 'id无效');
 		}else{
 			$list = $this->getAllRule($table);

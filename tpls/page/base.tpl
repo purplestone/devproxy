@@ -17,7 +17,7 @@
 {% block name=css %}{% /block %}
 {% block name=js_global %}
 <script type="text/javascript" src="http://js.t.sinajs.cn/STK/js/gaea.1.14.js"></script>
-<script type="text/javascript" src="http://js.webdebugger/dev/js/all.js"></script>
+<script type="text/javascript" src="http://js.devproxy/dev/js/all.js"></script>
 {% /block %}
 {% block name=js %}{% /block %}
 </head>
