@@ -15,6 +15,7 @@ class Page extends Tpl{
 		//$this->display($data, $sTplPath);
 		parent::__construct();
 		$this->data = $data;
+		eachValue($this->data, htmlspecialchars);
 		foreach ($this->data as $key=>$unit) {
 			$this->assign($key, $unit);
 		}

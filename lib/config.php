@@ -7,6 +7,7 @@ if(!$sIniPath) {
 }
 
 $postToGet = true;
+$debugger = true;
 
 require_once($_SERVER['DOCUMENT_ROOT'] . '/php/libs/fun.php');
 

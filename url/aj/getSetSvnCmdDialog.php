@@ -24,7 +24,9 @@ if(isset($errorMsg)) {
 ///aj/getSetSvnCmdDialog?type=css
 
 $iniData = new iniData();
+
 $apiMsg = $iniData->getSvnUpCmd($requery['type']);
+
 if($apiMsg['code'] == '100000') {
 	$data = array(
 		'cmd' => $apiMsg['data'],

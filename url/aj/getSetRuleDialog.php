@@ -24,10 +24,14 @@ if(isset($errorMsg)) {
 
 
 ///aj/getSetRuleDialog?table=ex&act=edit&id=1
-///aj/getSetRuleDialog?table=transition_css_url&act=edit&id=0
-///aj/getSetRuleDialog?table=ex&act=add
+///aj/getSetRuleDialog?table=transition_css_url&act=edit&id=0&hasAble=fasle
+///aj/getSetRuleDialog?table=ex&act=add&hasAble=true
 
 $errorMsg = flowByKey('act', $requery['act'], array('add', 'edit'));
+
+if($errorMsg) {
+	$trans->response('100001', null, $errorMsg);
+}
 
 
 function flow_add() {
@@ -52,9 +56,9 @@ function flow_edit() {
 
 		$u = $u['data'];
 		$data = array(
-			'src' => $u[1],
-			'target' => $u[2],
-			'able' => $u[3],
+			'src' => $u['src'],
+			'target' => $u['target'],
+			'able' => $u['able'],
 
 			'table' => $requery['table'],
 			'act' => $requery['act'],
@@ -70,7 +74,6 @@ function flow_edit() {
 	}
 
 }
-
 
 
 

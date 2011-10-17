@@ -28,7 +28,7 @@ if(isset($errorMsg)) {
 
 
 ///aj/setRule?table=ex&act=edit&id=1&src=xxxxx&target=xxx&able=1
-///aj/setRule?table=ex&act=add
+///aj/setRule?table=ex&act=add&src=xxxxx&target=xxx&able=1
 ///aj/setRule?table=ex&act=del&id=1
 
 $errorMsg = flowByKey('act', $requery['act'], array('add', 'edit', 'del'));
@@ -40,6 +40,14 @@ function flow_add() {
 
 	$apiMsg = $iniData->addRule($requery['table'], $requery['src'], $requery['target'], $requery['able']);
 
+	$apiMsg['data'] = array_merge($apiMsg['data'], array(
+		'src' => $requery['src'],
+		'act' => 'add',
+		'target' => $requery['target'],
+		'able' => $requery['able'],
+		'table' => $requery['table']
+	));
+
 	$trans->response($apiMsg);
 }
 
@@ -48,7 +56,19 @@ function flow_edit() {
 
 	$iniData = new iniData();
 
-	$apiMsg = $iniData->setRule($requery['table'], $requery['id'], $requery['src'], $requery['target'], $requery['able']);
+	if($requery['src'] === null || $requery['target'] === null) {
+		$apiMsg = $iniData->switchRule($requery['table'], $requery['id'], $requery['able']);
+	}else{
+		$apiMsg = $iniData->setRule($requery['table'], $requery['id'], $requery['src'], $requery['target'], $requery['able']);
+		$apiMsg['data'] = array(
+			'src' => $requery['src'],
+			'act' => 'add',
+			'target' => $requery['target'],
+			'able' => $requery['able'],
+			'id' => $requery['id'],
+		);
+	}
+
 
 	$trans->response($apiMsg);
 }

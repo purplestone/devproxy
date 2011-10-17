@@ -4,21 +4,27 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '/php/script/devproxy/api/iniData.php')
 require_once($_SERVER['DOCUMENT_ROOT'] . '/php/script/devproxy/lib/Page.php');
 require_once($_SERVER['DOCUMENT_ROOT'] . '/php/script/devproxy/lib/Trans.php');
 
-$type = $_REQUEST['type'];
-$cmd = $_REQUEST['cmd'];
-//$type = $_POST['type'];
-//$context = $_POST['context'];
-
 $trans = new Trans();
+
+$requery = array(
+	'type' => getPost('type'),
+	'cmd' => getPost('cmd', ''),
+);
+
+if(!$requery['type']) {
+	$errorMsg = 'type 参数 不能为空';
+}
+
+if(isset($errorMsg)) {
+	$trans->response('100001', null, $errorMsg);
+	exit;
+}
+
 
 $iniData = new iniData();
 
-$errorMsg = $iniData->setSvnUpCmd($type, $cmd);
+$apiMsg = $iniData->setSvnUpCmd($requery['type'], $requery['cmd']);
 
-if($errorMsg) {
-	$trans->response('100001', null, $errorMsg);
-}else{
-	$trans->response('100000', array('type'=>$type, 'cmd'=>$cmd), 'ok');
-}
+$trans->response($apiMsg);
 
 ?>

@@ -19,86 +19,62 @@ $requery = array(
 	'type' => getPost('type')
 );
 
-///aj/getSetSettingRuleDialog?act=add&src=xxx&target=xxx&able=true&context=test&type=css
-///aj/getSetSettingRuleDialog?act=edit&src=xxx&target=xxx&able=true&context=test&type=css&src_context=test&src_type=js&id=1
-///aj/getSetSettingRuleDialog?act=del&context=test&type=css&id=1
 
-function requeryHasError() {
-	global $requery, $errorMsg;
-	
-	if($requery['act'] != 'add' && $requery['act'] != 'edit' && $requery['act'] != 'del') {
-		return 'act参数 必须为 add | edit | del';
-	}
-
-	if(!$requery['context']) {
-		return 'table参数 不能为空';
-	}
-
-	if(!$requery['context']) {
-		return 'context参数 不能为空';
-	}
-
-	if(!$requery['type']) {
-		return 'type参数 不能为空';
-	}
-
-	if($requery['act'] == 'add' && $requery['id'] === null) {
-		return 'id参数 不能为空';
-	}
-
-	if($requery['act'] == 'edit' && $requery['able'] === null && $requery['context'] === null && $requery['type'] === null && $requery['able'] === null) {
-		return 'hasAble参数 不能为空';
-	}
-
-	return null;
-	
+if(!$requery['act']) {
+	$errorMsg = 'act 参数 不能为空';
 }
 
-$errorMsg = requeryHasError();
-
-if($errorMsg) {
+if(isset($errorMsg)) {
 	$trans->response('100001', null, $errorMsg);
 	exit;
 }
 
+///aj/getSetSettingRuleDialog?act=add
+///aj/getSetSettingRuleDialog?act=edit&src_context=test&src_type=js&id=1
 
+$errorMsg = flowByKey('act', $requery['act'], array('add', 'edit'));
 
-$iniData = new iniData();
-
-$u = $iniData->getSettingRule($context, $type, $id);
-
-if($u['code'] == '100000') {
-
-	$u = $u['data'];
+function flow_add() {
+	global $trans, $requery;
 	$data = array(
-		'src' => $u[1],
-		'target' => $u[2],
-		'able' => $u[3],
-
-		'table' => $table,
-		'act' => $act,
-		'hasAble' => $hasAble,
-		'id' => $id
+		'act' => 'add',
+		'src_context' => $requery['src_context'],
+		'src_type' => $requery['src_type'],
 	);
-
-	$tpl = new Page($data);
-
-	//var_dump($data);
-	//echo $tpl->fetch('lump/ruleDialog.tpl');
-	//exit;
-
-
-}else{
-	$errorMsg = $u['msg'];
+	$tpl = new Page($data);echo $tpl->fetch('lump/settingDialog.tpl');
+	$trans->response('100000', $tpl->fetch('lump/settingDialog.tpl'), 'ok');
 }
 
+function flow_edit() {
+	global $trans, $requery;
 
-$tpl = new Page($data);
+	$iniData = new iniData();
+	$apiMsg = $iniData->getSettingRule($requery['src_context'], $requery['src_type'], $requery['id']);
+
+	if($apiMsg['code'] == '100000') {
+
+		$u = $apiMsg['data'];
+		$data = array(
+			'src' => $u['src'],
+			'target' => $u['target'],
+			'src_context' => $requery['src_context'],
+			'src_type' => $requery['src_type'],
+			'able' => $u['able'],
+			'act' => $requery['act'],
+			'id' => $requery['id']
+		);
+
+		$tpl = new Page($data);echo $tpl->fetch('lump/settingDialog.tpl');
+		$trans->response('100000', $tpl->fetch('lump/settingDialog.tpl'), 'ok');
+
+	}else{
+		$trans->response($apiMsg);
+	}
+
+}
 
 if($errorMsg) {
 	$trans->response('100001', null, $errorMsg);
-}else{
-	$trans->response('100000', $tpl->fetch('lump/svnEditDialog.tpl'), 'ok');
 }
 
 ?>

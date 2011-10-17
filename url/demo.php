@@ -12,7 +12,7 @@ $requery = array(
 );
 
 if(!$requery['act']) {
-	$errorMsg = 'act参数 不能为空';
+	$errorMsg = 'act 参数 不能为空';
 }
 
 if(isset($errorMsg)) {
@@ -25,6 +25,9 @@ if(isset($errorMsg)) {
 
 $errorMsg = flowByKey('act', $requery['act'], array('add', 'edit'));
 
+if($errorMsg) {
+	$trans->response('100001', null, $errorMsg);
+}
 
 function flow_add() {
 	global $trans, $requery;
@@ -42,11 +45,11 @@ function flow_edit() {
 	global $trans, $requery;
 
 	$iniData = new iniData();
-	$u = $iniData->getRule($requery['table'], $requery['id']);
+	$apiMsg = $iniData->getRule($requery['table'], $requery['id']);
 
-	if($u['code'] == '100000') {
+	if($apiMsg['code'] == '100000') {
 
-		$u = $u['data'];
+		$u = $$apiMsg['data'];
 		$data = array(
 			'src' => $u[1],
 			'target' => $u[2],
@@ -62,15 +65,21 @@ function flow_edit() {
 		$trans->response('100000', $tpl->fetch('lump/ruleDialog.tpl'), 'ok');
 
 	}else{
-		$trans->response($u);
+		$trans->response($apiMsg);
 	}
 
 }
 
 
 
+if($apiMsg['code'] == '100000') {
+	$trans->response('100000', array('type'=>$type, 'able'=>$able), 'ok');
+}else{
+	$trans->response($u);
+}
 
 
+$apiMsg = createApiMsg('100000', null, 'ok');
 
 
 
