@@ -464,9 +464,9 @@ class iniData {
 		}
 
 		if(!$apiMsg) {
+
 			$apiMsg = $this->checkContextInput($context);
 		}
-
 		if(!$apiMsg) {
 			$table = &$this->oIni->condition->$context->setting->$type->table;
 			$u = &getRowById($table, $id);
@@ -508,17 +508,27 @@ class iniData {
 			if($src_context === $context && $src_type === $type) {
 				$u = &getRowById($src_table, $id);
 				if($u !== null) {
-					$u['src'] = $src;
-					$u['target'] = $target;
+					$u['1'] = $src;
+					$u['2'] = $target;
+					$this->saveIni();
 					$apiMsg = createApiMsg('100000', null, 'ok');
 				}else{
 					$apiMsg = createApiMsg('100001', null, '没有查询到id为'.$id.'的条目');
 				}
 			}else{
 				$apiMsg = $this->delSettingRule($id, $context, $type);
+				global $debugger;
+				
+				if($debugger && $apiMsg) {
+					try {throw new Exception('file_iniData');}catch (Exception $e) {
+					   $sErrorMsg = $e->getMessage() . ' ' . $e->getLine();
+					}
+					$apiMsg['data'] = $apiMsg;
+				}
 				if(!$apiMsg) {
 					$apiMsg = $this->addSettingRule($id, $context, $type, $src, $target, $able);
 				}
+				$this->saveIni();
 			}
 		}
 
@@ -526,13 +536,15 @@ class iniData {
 	}
 
 	
-	public function switchSettingRule($id, $src_context, $src_type, $able) {
-		$u = &getRowById($this->oIni->condition->$context->setting->$type->table, $id);
+	public function switchSettingRule($id, $context, $type, $able) {
+		$tabale = &$this->oIni->condition->$context->setting->$type->table;
+		$u = &getRowById($tabale, $id);
 
 		if($u !== null) {
-			$u[3] = $able;
+			$u[3] = fixBoolean($able);
 			$apiMsg = createApiMsg('100000', null, 'ok');
 			$this->saveIni();
+			//var_dump($this->oIni->condition);
 		}else{
 			$apiMsg = createApiMsg('100001', null, '在'.$table.'中没有查询到id为'.$id.'的条目');
 		}
@@ -604,6 +616,8 @@ class iniData {
 		global $sIniPath;
 		$sIni = json_encode($this->oIni);
 		$sIni = file_put_contents($sIniPath, $sIni);
+		exec('python E:\ggg_toy\debug_proxy\dev_proxy.py -j ' . $sIniPath);
+		//exec('E:\debug_proxy\dev_proxy.exe -formatjson ' . $sIniPath);
 	}
 
 	private function fixAble($able) {

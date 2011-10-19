@@ -7,9 +7,9 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '/php/script/devproxy/lib/Page.php');
 $iniData = new iniData();
 
 $data = array(
+	'currentIni' =>$iniData->getCurrentIni(),
 	'exRule' => $iniData->getExRule(),
 	'currentContext' => $iniData->getCurrentSettingRule(),
-	'currentIni' =>$iniData->getCurrentIni()
 );
 
 //var_dump($data['currentContext']);

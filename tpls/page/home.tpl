@@ -47,16 +47,7 @@
 				</div>
 				<table cellspacing="0" cellpadding="5" ><tbody node-type="exRuleTable">
 				 {% foreach from=$exRule item=exRuleRow %}
-					<tr node-type="row_{% $exRuleRow[0] %}">
-						<td node-type="srcReg">{% $exRuleRow[1] %}</td>
-						<td node-type="targetReg">{% $exRuleRow[2] %}</td>
-						<td>
-							<a href="#" action-type="delExRuleBtn" action-data="table=ex&act=del&id={% $exRuleRow[0] %}">del</a>&nbsp;
-							<a href="#" action-type="editExRuleBtn" action-data="hasAble=true&table=ex&act=edit&id={% $exRuleRow[0] %}">edit</a>&nbsp;
-							<a href="#">file</a>
-						</td>
-						<td><input type="checkbox" node-type="ableStatus" value="table=ex&id={% $exRuleRow[0] %}"{% if $exRuleRow[3] %} checked="checked"{% /if %} /></td>
-					</tr>
+					{% include file='lump/exRuleRow.tpl' %}
 				 {% /foreach %}
 				</tbody></table>
 			</div>
@@ -66,13 +57,13 @@
 					</div>
 					<table cellspacing="0" cellpadding="5" ><tbody node-type="settingRuleTable">
 					 {% foreach from=$currentContext item=currentContextRow %}
-						<tr node-type="row_{% $currentContextRow[0] %}">
+						<tr node-type="row_{% $currentContextRow[5] %}_{% $currentContextRow[4] %}_{% $currentContextRow[0] %}">
 							<td node-type="srcReg">{% $currentContextRow[1] %}</td>
 							<td node-type="targetReg">{% $currentContextRow[2] %}</td>
 							<td node-type="context">{% $currentContextRow[5] %}</td>
 							<td node-type="type">{% $currentContextRow[4] %}</td>
 							<td><a href="#">to rule</a> <a href="#" action-type="delSettingRuleBtn" action-data="src_context={% $currentContextRow[5] %}&src_type={% $currentContextRow[4] %}&act=edit&id={% $currentContextRow[0] %}">edit</a></td>
-							<td><input type="checkbox" id="" name="" value="{% $currentContextRow[4] %}"{% if $currentContextRow[4] %} checked="checked"{% /if %} /></td>
+							<td><input type="checkbox" name="" value="src_context={% $currentContextRow[5] %}&src_type={% $currentContextRow[4] %}&act=edit&id={% $currentContextRow[0] %}"{% if $currentContextRow[3] %} checked="checked"{% /if %} /></td>
 						</tr>
 					 {% /foreach %}
 					</tbody></table>
