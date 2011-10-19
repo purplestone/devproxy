@@ -125,6 +125,14 @@ class iniData {
 	public function getExRule() {
 		$data = $this->getAllRule('ex');
 		$data = $data['data'];
+		foreach ($data as &$u) {
+			$u = array(
+				'id' => $u[0],
+				'src' => $u[1],
+				'target' => $u[2],
+				'able' => $u[3],
+			);
+		}
 		return $data;
 	}
 
@@ -135,8 +143,15 @@ class iniData {
 				$context = $unit->context;
 				$settingUnit = $this->oIni->condition->$context->setting->$type->table;
 				foreach ($settingUnit as $rule) {
-					array_push($rule, $type, $context);
-					$data[] = $rule;
+					//array_push($rule, $type, $context);
+					$data[] = array(
+						'id' => $rule[0],
+						'src' => $rule[1],
+						'target' => $rule[2],
+						'type' => $type,
+						'context' => $context,
+						'able' => $rule[3],
+					);
 				}
 			}
 		}
@@ -616,8 +631,7 @@ class iniData {
 		global $sIniPath;
 		$sIni = json_encode($this->oIni);
 		$sIni = file_put_contents($sIniPath, $sIni);
-		exec('python E:\ggg_toy\debug_proxy\dev_proxy.py -j ' . $sIniPath);
-		//exec('E:\debug_proxy\dev_proxy.exe -formatjson ' . $sIniPath);
+		//exec('python E:\ggg_toy\debug_proxy\dev_proxy.py -j ' . $sIniPath);
 	}
 
 	private function fixAble($able) {

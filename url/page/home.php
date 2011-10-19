@@ -13,9 +13,9 @@ $data = array(
 );
 
 //var_dump($data['currentContext']);
+
 $tpl = new Page($data);
 
 $tpl->display('page/home.tpl');
-
 
 ?>

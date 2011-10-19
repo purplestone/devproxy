@@ -9,6 +9,8 @@ $trans = new Trans();
 $requery = array(
 	'act' => getPost('act'),
 	'id' => getPost('id'),
+	'src' => getPost('src'),
+	'target' => getPost('target'),
 	'table' => getPost('table'),
 	'hasAble' => getPost('hasAble', true),
 );
@@ -38,6 +40,8 @@ function flow_add() {
 	global $trans, $requery;
 	$data = array(
 		'act' => 'add',
+		'src' => $requery['src'],
+		'target' => $requery['target'],
 		'table' => $requery['table'],
 		'able' => true,
 		'hasAble' => true,

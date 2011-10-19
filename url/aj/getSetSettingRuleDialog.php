@@ -41,7 +41,7 @@ function flow_add() {
 		'src_context' => $requery['src_context'],
 		'src_type' => $requery['src_type'],
 	);
-	$tpl = new Page($data);echo $tpl->fetch('lump/settingDialog.tpl');
+	$tpl = new Page($data);
 	$trans->response('100000', $tpl->fetch('lump/settingDialog.tpl'), 'ok');
 }
 
@@ -64,7 +64,7 @@ function flow_edit() {
 			'id' => $requery['id']
 		);
 
-		$tpl = new Page($data);echo $tpl->fetch('lump/settingDialog.tpl');
+		$tpl = new Page($data);
 		$trans->response('100000', $tpl->fetch('lump/settingDialog.tpl'), 'ok');
 
 	}else{

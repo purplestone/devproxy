@@ -57,14 +57,7 @@
 					</div>
 					<table cellspacing="0" cellpadding="5" ><tbody node-type="settingRuleTable">
 					 {% foreach from=$currentContext item=currentContextRow %}
-						<tr node-type="row_{% $currentContextRow[5] %}_{% $currentContextRow[4] %}_{% $currentContextRow[0] %}">
-							<td node-type="srcReg">{% $currentContextRow[1] %}</td>
-							<td node-type="targetReg">{% $currentContextRow[2] %}</td>
-							<td node-type="context">{% $currentContextRow[5] %}</td>
-							<td node-type="type">{% $currentContextRow[4] %}</td>
-							<td><a href="#">to rule</a> <a href="#" action-type="delSettingRuleBtn" action-data="src_context={% $currentContextRow[5] %}&src_type={% $currentContextRow[4] %}&act=edit&id={% $currentContextRow[0] %}">edit</a></td>
-							<td><input type="checkbox" name="" value="src_context={% $currentContextRow[5] %}&src_type={% $currentContextRow[4] %}&act=edit&id={% $currentContextRow[0] %}"{% if $currentContextRow[3] %} checked="checked"{% /if %} /></td>
-						</tr>
+						{% include file='lump/settingRuleRow.tpl' %}
 					 {% /foreach %}
 					</tbody></table>
 			</div>
