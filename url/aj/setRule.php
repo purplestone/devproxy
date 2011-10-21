@@ -50,7 +50,12 @@ function flow_add() {
 		);
 
 		$tpl = new Page(array(
-			'exRuleRow' => array($apiMsg['data']['id'], $requery['src'], $requery['target'], $requery['able'])	
+			'exRuleRow' => array(
+				'id' => $apiMsg['data']['id'],
+				'src' => $requery['src'],
+				'target' => $requery['target'],
+				'able' => $requery['able']
+			)	
 		));
 
 		$data['html'] = $tpl->fetch('lump/exRuleRow.tpl');

@@ -519,6 +519,7 @@ class iniData {
 	
 
 	public function setSettingRule($id, $src_context, $src_type, $context, $type, $src, $target, $able) {
+		global $debugger;
 
 		$apiMsg = null;
 
@@ -560,18 +561,16 @@ class iniData {
 				}
 			}else{
 				$apiMsg = $this->delSettingRule($id, $src_context, $src_type);
-				global $debugger;
 				
-				if($debugger && $apiMsg) {
-					try {throw new Exception('file_iniData');}catch (Exception $e) {
+				if($debugger && $apiMsg['code'] !== '100000') {
+					try {throw new Exception('file_iniData'.$apiMsg['msg']);}catch (Exception $e) {
 					   $sErrorMsg = $e->getMessage() . ' ' . $e->getLine();
 					}
-					$apiMsg['data'] = $sErrorMsg;
+					$apiMsg['msg'] = $sErrorMsg.' '.$apiMsg['msg'];
 				}
-				if(!$apiMsg) {
-					$apiMsg = $this->addSettingRule($id, $context, $type, $src, $target, $able);
+				if($apiMsg['code'] === '100000') {
+					$apiMsg = $this->addSettingRule($context, $type, $src, $target, $able);
 				}
-				$this->saveIni();
 			}
 		}
 
@@ -580,6 +579,7 @@ class iniData {
 
 	
 	public function switchSettingRule($id, $context, $type, $able) {
+		global $debugger;
 		$tabale = &$this->oIni->condition->$context->setting->$type->table;
 		$u = &getRowById($tabale, $id);
 
@@ -589,7 +589,12 @@ class iniData {
 			$this->saveIni();
 			//var_dump($this->oIni->condition);
 		}else{
-			$apiMsg = createApiMsg('100001', null, '在'.$table.'中没有查询到id为'.$id.'的条目');
+			if($debugger) {
+				try {throw new Exception('iniData_setSettingRule');}catch (Exception $e) {
+				   $sErrorMsg = $e->getMessage() . ' ' . $e->getLine();
+				}
+			}
+			$apiMsg = createApiMsg('100001', null, $sErrorMsg.' '.$src_context.' '.$src_type.'没有查询到id为'.$id.'的条目');
 		}
 		return $apiMsg;
 	}
