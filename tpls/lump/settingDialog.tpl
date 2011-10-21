@@ -6,18 +6,19 @@
 
 
 {% block name="inner" %}
-<form method="post" action="/aj/editSetting">
+<form method="post" action="/aj/editSetting" node-type="getSettingDialogForm">
 <input type="hidden" name="act" value="{% $act %}" />
 <input type="hidden" name="src_context" value="{% $src_context %}" />
 <input type="hidden" name="src_type" value="{% $src_type %}" />
+<input type="hidden" name="id" value="{% $id %}" />
 <div class="dialogC">
 	<div class="dialogU">
 		<label class="dialogT" for="srcUrl">原URL:</label>
-		<span class="dialogB"><textarea id="srcUrl" class="ruleInput">{% $src %}</textarea></span>
+		<span class="dialogB"><textarea id="srcUrl" name="src" class="ruleInput">{% $src %}</textarea></span>
 	</div>
 	<div class="dialogU">
 		<label class="dialogT" for="urlTo">转向到:</label>
-		<span class="dialogB"><textarea id="urlTo" class="ruleInput">{% $target %}</textarea></span>
+		<span class="dialogB"><textarea id="urlTo" name="target" class="ruleInput">{% $target %}</textarea></span>
 	</div>
 	<div class="dialogU">
 		<label class="dialogT" for="urlTo">环境:</label>
@@ -38,12 +39,12 @@
 	</div>
 	<div class="dialogU">
 		<span class="dialogT">&nbsp;</span>
-		<span class="dialogB"><label for="able"><input{% if $able %} checked="checked"{% /if %} type="checkbox" id="able" name="" value="" />启用</label></span>
+		<span class="dialogB"><label for="able"><input{% if $able %} checked="checked"{% /if %} type="checkbox" id="able" name="able" value="" />启用</label></span>
 	</div>
 </div>
 <div class="dialogF">
 	<button type="submit">Submit</button>
-	<button type="button">Cancel</button>
+	<button type="button" action-type="closeDialog">Cancel</button>
 </div>
 </form>
 {% /block %}

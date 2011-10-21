@@ -41,6 +41,16 @@
 				</table>
 			</div>
 			<br class="clear" />
+			<div id="pl_home_currentContext" class="tableStyle">
+					<div class="tableTilteStyle"> 当前环境</br>
+					</div>
+					<table cellspacing="0" cellpadding="5" ><tbody node-type="settingRuleTable">
+					 {% foreach from=$currentContext item=currentContextRow %}
+						{% include file='lump/settingRuleRow.tpl' %}
+					 {% /foreach %}
+					</tbody></table>
+			</div>
+			<br class="clear" />
 			<div id="pl_home_exRule" class="tableStyle">
 				<div class="tableTilteStyle">特殊规则
 					<button class="link" type="button" action-type="addExRuleBtn" action-data="table=ex&act=add">添加规则</button>
@@ -50,16 +60,6 @@
 					{% include file='lump/exRuleRow.tpl' %}
 				 {% /foreach %}
 				</tbody></table>
-			</div>
-			<br class="clear" />
-			<div id="pl_home_currentContext" class="tableStyle">
-					<div class="tableTilteStyle"> 当前环境</br>
-					</div>
-					<table cellspacing="0" cellpadding="5" ><tbody node-type="settingRuleTable">
-					 {% foreach from=$currentContext item=currentContextRow %}
-						{% include file='lump/settingRuleRow.tpl' %}
-					 {% /foreach %}
-					</tbody></table>
 			</div>
 		</div>
 {% /block %}

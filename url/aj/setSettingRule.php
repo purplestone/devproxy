@@ -93,9 +93,13 @@ function flow_edit() {
 
 	$apiMsg['data'] = array(
 		'src' => $requery['src'],
-		'act' => 'add',
+		'act' => 'edit',
 		'target' => $requery['target'],
 		'able' => $requery['able'],
+		'context' => $requery['context'],
+		'type' => $requery['type'],
+		'src_context' => $requery['src_context'],
+		'src_type' => $requery['src_type'],
 		'id' => $requery['id'],
 	);
 

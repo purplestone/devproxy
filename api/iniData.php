@@ -7,9 +7,18 @@ class iniData {
 
 	function __construct() {
 		global $sIniPath;
-		$sIni = file_get_contents($sIniPath);
+		$this->sIniPath = $sIniPath;
+		$sIni = file_get_contents($this->sIniPath);
 		$this->oIni = json_decode($sIni);
 	}
+
+	public function getIniPath() {
+		//$this->sIniPath = preg_replace ('/\\\\/e', '\\\\', $this->sIniPath);
+		//$this->sIniPath = preg_replace ('/\\\\/e', '\/', $this->sIniPath);
+		//var_dump($this->sIniPath);
+		return $apiMsg = createApiMsg('100000', $this->sIniPath, 'ok');
+	}
+	
 
 	public function getCommonFile($type="_") {
 		if(!$type) {
@@ -457,7 +466,13 @@ class iniData {
 			$u = getRowById($table, $id);
 
 			if($u === null) {
-				$apiMsg = createApiMsg('100001', null, '没有查询到id为'.$id.'的条目');
+				global $debugger;
+				if($debugger) {
+					try {throw new Exception('iniData_getSettingRule');}catch (Exception $e) {
+					   $sErrorMsg = $e->getMessage() . ' ' . $e->getLine();
+					}
+				}
+				$apiMsg = createApiMsg('100001', null, $sErrorMsg.' '.$context.' '.$type.'没有查询到id为'.$id.'的条目');
 			}else{
 				$apiMsg = createApiMsg('100000', array(
 					'src' => $u[1],
@@ -490,7 +505,13 @@ class iniData {
 				$apiMsg = createApiMsg('100000', null, 'ok');
 				$this->saveIni();
 			}else{
-				$apiMsg = createApiMsg('100001', null, '没有查询到id为'.$id.'的条目');
+				global $debugger;
+				if($debugger) {
+					try {throw new Exception('iniData_delSettingRule');}catch (Exception $e) {
+					   $sErrorMsg = $e->getMessage() . ' ' . $e->getLine();
+					}
+				}
+				$apiMsg = createApiMsg('100001', null, $sErrorMsg.' '.$context.' '.$type.'没有查询到id为'.$id.'的条目');
 			}
 		}
 		return $apiMsg;
@@ -525,20 +546,27 @@ class iniData {
 				if($u !== null) {
 					$u['1'] = $src;
 					$u['2'] = $target;
+					$u['3'] = $able;
 					$this->saveIni();
 					$apiMsg = createApiMsg('100000', null, 'ok');
 				}else{
-					$apiMsg = createApiMsg('100001', null, '没有查询到id为'.$id.'的条目');
+					global $debugger;
+					if($debugger) {
+						try {throw new Exception('iniData_setSettingRule');}catch (Exception $e) {
+						   $sErrorMsg = $e->getMessage() . ' ' . $e->getLine();
+						}
+					}
+					$apiMsg = createApiMsg('100001', null, $sErrorMsg.' '.$src_context.' '.$src_type.'没有查询到id为'.$id.'的条目');
 				}
 			}else{
-				$apiMsg = $this->delSettingRule($id, $context, $type);
+				$apiMsg = $this->delSettingRule($id, $src_context, $src_type);
 				global $debugger;
 				
 				if($debugger && $apiMsg) {
 					try {throw new Exception('file_iniData');}catch (Exception $e) {
 					   $sErrorMsg = $e->getMessage() . ' ' . $e->getLine();
 					}
-					$apiMsg['data'] = $apiMsg;
+					$apiMsg['data'] = $sErrorMsg;
 				}
 				if(!$apiMsg) {
 					$apiMsg = $this->addSettingRule($id, $context, $type, $src, $target, $able);
