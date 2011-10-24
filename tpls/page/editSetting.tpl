@@ -6,9 +6,9 @@
 		<div class="mapNav"><a href="/home">返回首页</a></div>
 		<div class="tableStyle" id="pl_transitionRule_ruleList">
 				<div class="tableTilteStyle">环境配置</br>
-					<button id="title" type="button">查看配置文件路径</button>
-					<button id="title" type="button">批量编辑</button>
 					<button id="title" type="button">添加配置</button>
+					<button id="title" type="button">查看配置文件路径</button>
+					<!-- <button id="title" type="button">批量编辑</button> -->
 				</div>
 				<table cellspacing="0" cellpadding="5" border="1px">
 					<thead>

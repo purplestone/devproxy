@@ -12,7 +12,6 @@ $data = array(
 	'currentContext' => $iniData->getCurrentSettingRule(),
 );
 
-//var_dump($data['currentContext']);
 
 $tpl = new Page($data);
 

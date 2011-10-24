@@ -40,6 +40,7 @@
 					 {% /foreach %}
 				</table>
 			</div>
+			<button node-type="reloadIniDataBtn" class="reloadIniDataBtn" type="button">重置代理程序</button>
 			<br class="clear" />
 			<div id="pl_home_currentContext" class="tableStyle">
 					<div class="tableTilteStyle"> 当前环境</br>

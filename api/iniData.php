@@ -145,6 +145,20 @@ class iniData {
 		return $data;
 	}
 
+
+	public function getCurrentSetting() {
+		$data = $this->oIni->currentIni;
+		foreach ($data as $type=>$unit) {
+			if(!$data->$type->able) {
+				unset($data->$type);
+			}else{
+				$data->$type = $data->$type->context;
+			}
+		}
+		return $data;
+	}
+
+
 	public function getCurrentSettingRule() {
 		$data = array();
 		foreach ($this->oIni->currentIni as $type=>$unit) {

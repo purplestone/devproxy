@@ -101,6 +101,7 @@ function flow_edit() {
 		'src_context' => $requery['src_context'],
 		'src_type' => $requery['src_type'],
 		'id' => $requery['id'],
+		'currentSetting' => $iniData->getCurrentSetting()
 	);
 
 	$trans->response($apiMsg);
