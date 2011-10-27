@@ -12,7 +12,7 @@ $requery = array(
 	'id' => getPost('id'),
 	'src' => getPost('src'),
 	'target' => getPost('target'),
-	'able' => getPost('able'),
+	'able' => fixBoolean(getPost('able')),
 	'src_context' => getPost('src_context'),
 	'context' => getPost('context'),
 	'src_type' => getPost('src_type'),
@@ -55,15 +55,17 @@ function flow_add() {
 		);
 
 		$tpl = new Page(array(
-			'exRuleRow' => array(
+			'settingRow' => array(
 				'id' => $apiMsg['data']['id'],
 				'src' => $requery['src'],
 				'target' => $requery['target'],
 				'able' => $requery['able'],
+				'type' => $requery['type'],
+				'context' => $requery['context'],
 			)	
 		));
-		$data['html'] = $tpl->fetch('lump/exRuleRow.tpl');
-
+		$data['html'] = $tpl->fetch('lump/settingRuleRow.tpl');
+		//echo $data['html'];
 		$apiMsg['data'] = array_merge($apiMsg['data'], $data);
 
 	}
@@ -89,21 +91,23 @@ function flow_edit() {
 	}else{
 		$apiMsg = $iniData->setSettingRule($requery['id'], $requery['src_context'], $requery['src_type'], $requery['context'], $requery['type'], $requery['src'], $requery['target'], $requery['able']);
 	}
-	
 
-	$apiMsg['data'] = array(
+	if(!$apiMsg['data']) {
+		$apiMsg['data'] = array('id' => $requery['id']);
+	}
+
+	$apiMsg['data'] = array_merge($apiMsg['data'], array(
 		'src' => $requery['src'],
 		'act' => 'edit',
 		'target' => $requery['target'],
 		'able' => $requery['able'],
 		'context' => $requery['context'],
 		'type' => $requery['type'],
+		'src_id' => $requery['id'],
 		'src_context' => $requery['src_context'],
 		'src_type' => $requery['src_type'],
-		'id' => $requery['id'],
-		'currentSetting' => $iniData->getCurrentSetting()
-	);
-
+		'currentSetting' => $iniData->getCurrentSetting(),
+	));
 	$trans->response($apiMsg);
 }
 

@@ -38,6 +38,7 @@
 
 <script type="text/javascript">
 //<!--
+	STK.E('resetForm').reset();
 	STK.pageletM.start();
 //-->
 </script>

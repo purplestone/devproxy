@@ -36,4 +36,4 @@ if($apiMsg['code'] == '100000') {
 	$trans->response($apiMsg);
 }
 
-?>f
+?>

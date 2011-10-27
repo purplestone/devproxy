@@ -31,14 +31,26 @@ class iniData {
 		$data = array();
 		foreach ($this->oIni->condition->local->setting as $type=>$listByType) {
 			foreach ($listByType->table as $unit) {
-				array_push($unit, $type, 'local');
-				$data[] = $unit;
+				$data[] = array(
+					'id' => $unit[0],
+					'src' => $unit[1],
+					'target' => $unit[2],
+					'context' => 'local',
+					'type' => $type,
+					'able' => $unit[3],
+				);
 			}
 		}
 		foreach ($this->oIni->condition->test->setting as $type=>$listByType) {
 			foreach ($listByType->table as $unit) {
-				array_push($unit, $type, 'test');
-				$data[] = $unit;
+				$data[] = array(
+					'id' => $unit[0],
+					'src' => $unit[1],
+					'target' => $unit[2],
+					'context' => 'test',
+					'type' => $type,
+					'able' => $unit[3],
+				);
 			}
 		}
 		return $data;
@@ -584,6 +596,7 @@ class iniData {
 				}
 				if($apiMsg['code'] === '100000') {
 					$apiMsg = $this->addSettingRule($context, $type, $src, $target, $able);
+					
 				}
 			}
 		}

@@ -8,7 +8,7 @@ $iniData = new iniData();
 $data = array('listSetting'=>$iniData->getAllSetting());
 
 $tpl = new Page($data);
-
+//var_dump($data);
 $tpl->display('page/editSetting.tpl');
 
 

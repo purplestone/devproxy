@@ -13,7 +13,7 @@ $requery = array(
 	'table' => getPost('table'),
 	'src' => getPost('src'),
 	'target' => getPost('target'),
-	'able' => getPost('able'),
+	'able' => fixBoolean(getPost('able')),
 );
 
 if(!$requery['act']) {

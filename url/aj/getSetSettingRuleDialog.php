@@ -40,6 +40,7 @@ function flow_add() {
 		'act' => 'add',
 		'src_context' => $requery['src_context'],
 		'src_type' => $requery['src_type'],
+		'able' => fixBoolean($requery['able']),
 	);
 	$tpl = new Page($data);
 	$trans->response('100000', $tpl->fetch('lump/settingDialog.tpl'), 'ok');

@@ -62,7 +62,7 @@ function flow_edit() {
 		$data = array(
 			'src' => $u['src'],
 			'target' => $u['target'],
-			'able' => $u['able'],
+			'able' => fixBoolean($u['able']),
 
 			'table' => $requery['table'],
 			'act' => $requery['act'],

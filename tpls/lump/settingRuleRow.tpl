@@ -1,9 +1,13 @@
 
-						<tr node-type="row_{% $currentContextRow['context'] %}_{% $currentContextRow['type'] %}_{% $currentContextRow['id'] %}">
-							<td node-type="srcReg">{% $currentContextRow['src'] %}</td>
-							<td node-type="targetReg">{% $currentContextRow['target'] %}</td>
-							<td node-type="context">{% $currentContextRow['context'] %}</td>
-							<td node-type="type">{% $currentContextRow['type'] %}</td>
-							<td><a href="#" action-type="toRuleBtn" action-data="hasAble=true&table=ex&act=add&src={% $currentContextRow['src']|escape:'url' %}&target={% $currentContextRow['target']|escape:'url' %}">to rule</a> <a href="#" action-type="delSettingRuleBtn" action-data="src_context={% $currentContextRow['context'] %}&src_type={% $currentContextRow['type'] %}&act=edit&id={% $currentContextRow['id'] %}">edit</a></td>
-							<td><input type="checkbox" name="" value="src_context={% $currentContextRow['context'] %}&src_type={% $currentContextRow['type'] %}&act=edit&id={% $currentContextRow['id'] %}"{% if $currentContextRow['able'] %} checked="checked"{% /if %} /></td>
+						<tr node-type="row_{% $settingRow['context'] %}_{% $settingRow['type'] %}_{% $settingRow['id'] %}" info="id={% $settingRow['id'] %}" class="_e_settingRuleRow{% if !$settingRow['able'] %} disable{% /if %}">
+							<td node-type="srcReg">{% $settingRow['src'] %}</td>
+							<td node-type="targetReg">{% $settingRow['target'] %}</td>
+							<td node-type="context">{% $settingRow['context'] %}</td>
+							<td node-type="type">{% $settingRow['type'] %}</td>
+							<td>
+								<!-- <a href="#" action-type="toRuleBtn" action-data="hasAble=true&table=ex&act=add">to rule</a> -->
+								<a href="#" class="delSettingRuleBtn" action-type="delSettingRuleBtn" action-data="act=del">del</a>
+								<a href="#" action-type="editSettingRuleBtn" action-data="act=edit">edit</a>
+							</td>
+							<td><input type="checkbox" node-type="able" action-type="switchAbleBtn" action-data="act=edit" name="" value="act=edit"{% if $settingRow['able'] %} checked="checked"{% /if %} /></td>
 						</tr>

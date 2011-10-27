@@ -2,8 +2,9 @@
 
 {% block name=title %}home {% /block %}
 
-{% block name=content %}
-		<div id="home">
+{% block name=content %}{% $iniPath %}
+		<div id="home"><form method="get" id="resetForm">
+			
 			<div id="pl_home_contextSelect" class="tableStyle">
 				<div class="tableTilteStyle">环境选择<a href="editSetting.html" class="link">修改环境配置</a></div>
 				
@@ -11,8 +12,8 @@
 					<thead>
 						<tr>
 							<th>&nbsp;</td>
-							<th>File</td>
-							<th>SVN</td>
+							<!-- <th>File</td>
+							<th>SVN</td> -->
 							<th>Local</td>
 							<th>Test</td>
 							<th>&nbsp;</td>
@@ -21,7 +22,7 @@
 					 {% foreach from=$currentIni key=type item=currentIniRow %}
 						<tr>
 							<td>{% $type %}</td>
-							<td>
+							<!-- <td>
 								<a action-type="transitionRuleBtn" href="/transitionRule?type={% $type %}">rule</a>&nbsp;
 								<a action-type="commonFileBtn" href="/commonFile?type={% $type %}">view</a>
 							</td>
@@ -32,26 +33,26 @@
 							</td>
 							 {% else %}
 								<td>-</td>
-							 {% /if %}
+							 {% /if %} -->
 							<td><input type="radio" action-type="contextSelBtn" name="{% $type %}_context" value="context=local&type={% $type %}"{% if $currentIniRow->context == 'local' %} checked="checked"{% /if %} /></td>
 							<td><input type="radio" action-type="contextSelBtn" name="{% $type %}_context" value="context=test&type={% $type %}"{% if $currentIniRow->context == 'test' %} checked="checked"{% /if %} /></td>
 							<td><input type="checkbox" action-type="switchTypeBtn" name="" value="type={% $type %}"{% if $currentIniRow->able %} checked="checked"{% /if %} /></td>
 						</tr>
 					 {% /foreach %}
 				</table>
+
+				<button node-type="reloadIniDataBtn" class="reloadIniDataBtn" type="button">重置代理程序</button>
 			</div>
-			<button node-type="reloadIniDataBtn" class="reloadIniDataBtn" type="button">重置代理程序</button>
-			<br class="clear" />
 			<div id="pl_home_currentContext" class="tableStyle">
-					<div class="tableTilteStyle"> 当前环境</br>
-					</div>
-					<table cellspacing="0" cellpadding="5" ><tbody node-type="settingRuleTable">
-					 {% foreach from=$currentContext item=currentContextRow %}
-						{% include file='lump/settingRuleRow.tpl' %}
-					 {% /foreach %}
-					</tbody></table>
+				<div class="tableTilteStyle"> 当前环境</br>
+				</div>
+				<table cellspacing="0" cellpadding="5" node-type="settingRuleList"><tbody node-type="settingRuleTable">
+				 {% foreach from=$currentContext item=settingRow %}
+					{% include file='lump/settingRuleRow.tpl' %}
+				 {% /foreach %}
+				</tbody></table>
 			</div>
-			<br class="clear" />
+			<!-- <br class="clear" /> -->
 			<div id="pl_home_exRule" class="tableStyle">
 				<div class="tableTilteStyle">特殊规则
 					<button class="link" type="button" action-type="addExRuleBtn" action-data="table=ex&act=add">添加规则</button>
@@ -62,7 +63,8 @@
 				 {% /foreach %}
 				</tbody></table>
 			</div>
-		</div>
+		
+		</form></div>
 {% /block %}
 
 {% block name=body_end %}
