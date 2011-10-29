@@ -1,0 +1,44 @@
+body {font-size:12px;padding:0.5em 1em;font-family:tahoma;}
+.mapNav {clear:both;padding:0 0 1em;}
+.tableStyle {float:left;border:#aaa 1px solid;padding:10px;margin:0 1em 0 0;background-color:#e4e4e4}
+.tableTilteStyle {padding:0 0 0.5em;font-size:14px;font-weight:bold;}
+.tableTilte2Style {padding:1em 0 0.5em;font-size:12px;font-weight:bold;}
+.tableStyle .link {font-size:12px;font-weight:normal;float:right;}
+.tableStyle tr:hover {background-color:#def;}
+
+#home {margin:10px 0 0;}
+#pl_home_contextSelect { margin-bottom:1em;background-color:#fec;border:#cb9 1px solid;}
+#pl_home_exRule { margin-bottom:1em;}
+#pl_home_currentContext{ margin-bottom:1em;}
+
+.reloadIniDataBtn {margin:1em 0 0 1em;}
+
+.disable {color:#888;}
+
+.dialogOuter {float:left;position:absolute;index-z:10000;padding:10px;background-color:rgb(226,239,239);}
+.dialogBox {padding:10px;background-color:rgb(201,226,226);border:1px solid rgb(102,204,204);}
+.dialogTitle {padding:0 0 0.5em;font-size:14px;font-weight:bold;}
+.dialogInner {padding:0 0.5em 0 0;}
+.dialogClose {float:right;padding: 0 6px 0 0;cursor:pointer;}
+.dialogU {clear:both;padding:0.5em 0;}
+.dialogT {float:left;width:4em;padding:0 0.5em 0 0;}
+.dialogB {float:left;}
+.dialogF {padding:1em 0;clear:both;text-align:right;}
+.cmdInput {width:550px;height:250px;}
+.ruleInput {width:550px;height:70px;}
+.dialogInput {font-size:14px;}
+
+#pl_home_currentContext .delSettingRuleBtn {display:none;}
+#pl_editSetting_settingList button {float:right;}
+#pl_transitionRule_ruleList .tableTilteStyle button {float:right;margin:0 0 5px 10px;}
+
+.dialogOuter button {font-family:tahoma;}
+
+table {border-collapse:collapse;background-color:#fff;border:#bbbbbb 1px solid;}
+td, th {padding:0.5em 1em;border:#bbbbbb 1px solid;}
+/*
+.myform11{border:#E2EFEF 5px solid; width:400px;height:auto;padding:20px;background-color:#C9E2E2;display:none;position:absolute;top:10%;left:10%;}
+.myform21{border:#E2EFEF 5px solid; width:500px;height:auto;padding:20px;background-color:#C9E2E2;}
+.myform21 textarea{margin-right:3px; vertical-align:top;}
+*/
+.clear {clear:both;display:block;overflow:hidden;height:1px;width:1px;}
