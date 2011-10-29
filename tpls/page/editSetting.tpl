@@ -3,7 +3,9 @@
 {% block name=title %}编辑配置{% /block %}
 
 {% block name=content %}
-		<div class="mapNav"><a href="/home">返回首页</a></div>
+		<div class="mapNav"><form method="get" id="resetForm">
+			
+		<a href="/home">返回首页</a></div>
 		<div class="tableStyle" id="pl_editSetting_settingList">
 				<div class="tableTilteStyle">环境配置</br>
 					<button id="title" type="button" node-type="addRuleDialog">添加配置</button>
@@ -20,7 +22,8 @@
 					 {% /foreach %}
 					</tbody>
 				</table>
-		</div>
+		
+		</form></div>
 {% /block %}
 
 {% block name=body_end %}
