@@ -11,7 +11,7 @@ body {font-size:12px;padding:0.5em 1em;font-family:tahoma;}
 #pl_home_exRule { margin-bottom:1em;}
 #pl_home_currentContext{ margin-bottom:1em;}
 
-.reloadIniDataBtn {margin:1em 0 0 1em;}
+.reloadIniDataBtn {}
 
 .disable {color:#888;}
 
