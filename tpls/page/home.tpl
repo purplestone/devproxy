@@ -2,7 +2,9 @@
 
 {% block name=title %}home {% /block %}
 
-{% block name=content %}{% $iniPath %}
+{% block name=content %}
+		{% $iniPath %}
+		<button node-type="reloadIniDataBtn" class="reloadIniDataBtn" type="button">重置代理程序</button>
 		<div id="home"><form method="get" id="resetForm">
 			
 			<div id="pl_home_contextSelect" class="tableStyle">
@@ -41,7 +43,6 @@
 					 {% /foreach %}
 				</table>
 
-				<button node-type="reloadIniDataBtn" class="reloadIniDataBtn" type="button">重置代理程序</button>
 			</div>
 			<div id="pl_home_currentContext" class="tableStyle">
 				<div class="tableTilteStyle"> 当前环境</br>
