@@ -3,8 +3,10 @@
 {% block name=title %}home {% /block %}
 
 {% block name=content %}
-		{% $iniPath %}
-		<button node-type="reloadIniDataBtn" class="reloadIniDataBtn" type="button">重置代理程序</button>
+		<div id="pl_home_iniInfo">
+			{% $iniPath %}
+			<button node-type="reloadIniDataBtn" class="reloadIniDataBtn" type="button">重置代理程序</button>
+		</div>
 		<div id="home"><form method="get" id="resetForm">
 			
 			<div id="pl_home_contextSelect" class="tableStyle">
@@ -22,7 +24,7 @@
 						</tr>
 					</thead>
 					 {% foreach from=$currentIni key=type item=currentIniRow %}
-						<tr>
+						<tr node-type="typeRow">
 							<td>{% $type %}</td>
 							<!-- <td>
 								<a action-type="transitionRuleBtn" href="/transitionRule?type={% $type %}">rule</a>&nbsp;

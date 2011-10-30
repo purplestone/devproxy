@@ -5,13 +5,14 @@ body {font-size:12px;padding:0.5em 1em;font-family:tahoma;}
 .tableTilte2Style {padding:1em 0 0.5em;font-size:12px;font-weight:bold;}
 .tableStyle .link {font-size:12px;font-weight:normal;float:right;}
 .tableStyle tr:hover {background-color:#def;}
+#pl_home_contextSelect tr:hover {background-color:#fffcea;}
 
 #home {margin:10px 0 0;}
-#pl_home_contextSelect { margin-bottom:1em;background-color:#fec;border:#cb9 1px solid;}
+#pl_home_contextSelect { margin-bottom:1em;background-color:#fff6e1;border:#cb9 1px solid;}
 #pl_home_exRule { margin-bottom:1em;}
 #pl_home_currentContext{ margin-bottom:1em;}
 
-.reloadIniDataBtn {}
+.enable {background-color:#fec;}
 
 .disable {color:#888;}
 

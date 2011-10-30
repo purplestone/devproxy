@@ -1,6 +1,6 @@
 /**
 * 
-* @id $.pl.home.contextSelect
+* @id $.pl.home.iniInfo
 * @param {Object} node 组件最外节点
 * @return {Object} 实例 
 * @example 
@@ -9,7 +9,7 @@
 
 /**
  * 
- * @id $.comp.home.contextSelect
+ * @id $.comp.home.iniInfo
  * @param {Object} node 组件最外节点
  * @return {Object} 实例
  * @author gaoyuan3@staff.sina.com.cn
@@ -36,6 +36,153 @@ STK.register('kit.dom.parseDOM', function($){
 		return list;
 	};
 });
+
+STK.register('comp.home.iniInfo', function($){
+
+	//+++ 常量定义区 ++++++++++++++++++
+	//-------------------------------------------
+	
+	return function(node){
+		var argsCheck, parseDOM, initPlugins, bindDOM, bindCustEvt, bindListener, destroy, init, that = {};
+
+
+		//+++ 变量定义区 ++++++++++++++++++
+		var _this = {
+			DOM:{},//节点容器
+			objs:{},//组件容器
+			DOM_eventFun: {//DOM事件行为容器
+				clickReloadIniDataBtn : function (oEvt) {
+					$.ajax({
+						'url':'/aj/reloadIni'
+					});
+					setTimeout(function() {location.reload('/home');},1000);
+				}
+			}
+			//属性方法区
+			
+		};
+		//----------------------------------------------
+
+
+		//+++ 参数的验证方法定义区 ++++++++++++++++++
+		argsCheck = function(){
+			if(!node) {
+				throw new Error('comp.home.iniInfo node 没有定义');
+			}
+		};
+		//-------------------------------------------
+
+
+		//+++ Dom的获取方法定义区 ++++++++++++++++++
+		parseDOM = function(){
+			//内部dom节点
+			_this.DOM = $.kit.dom.parseDOM($.builder(node).list);
+			if(!1) {
+				throw new Error('comp.home.iniInfo 必需的节点 不存在');
+			}
+
+			
+		};
+		//-------------------------------------------
+
+
+		//+++ 模块的初始化方法定义区 ++++++++++++++++++
+		initPlugins = function(){
+			
+		};
+		//-------------------------------------------
+
+
+		//+++ DOM事件绑定方法定义区 ++++++++++++++++++
+		bindDOM = function(){
+			$.addEvent(_this.DOM['reloadIniDataBtn'], 'click', _this.DOM_eventFun.clickReloadIniDataBtn);
+		};
+		//-------------------------------------------
+
+
+		//+++ 自定义事件绑定方法定义区 ++++++++++++++++++
+		bindCustEvt = function(){
+			
+		};
+		//-------------------------------------------
+
+
+		//+++ 广播事件绑定方法定义区 ++++++++++++++++++
+		bindListener = function(){
+			
+		};
+		//-------------------------------------------
+
+
+		//+++ 组件销毁方法的定义区 ++++++++++++++++++
+		destroy = function(){
+			if(_this) {
+				
+				
+				$.foreach(_this.objs, function(o) {
+					if(o.destroy) {
+						o.destroy();
+					}
+				});
+				_this = null;
+			}
+		};
+		//-------------------------------------------
+
+		//+++ 组件的初始化方法定义区 ++++++++++++++++++
+		init = function(){
+			argsCheck();
+			parseDOM();
+			initPlugins();
+			bindDOM();
+			bindCustEvt();
+			bindListener();
+		};
+		//-------------------------------------------
+		//+++ 执行初始化 ++++++++++++++++++
+		init();
+		//-------------------------------------------
+
+
+		//+++ 组件公开属性或方法的赋值区 ++++++++++++++++++
+		that.destroy = destroy;
+		
+		//-------------------------------------------
+
+
+		return that;
+	};
+	
+});
+
+
+
+STK.pageletM.register('pl.home.iniInfo',function($){
+	var node = $.E('pl_home_iniInfo');
+	if(node) {
+		var that = $.comp.home.iniInfo(node);
+		return that;
+	}
+});
+
+/**
+* 
+* @id $.pl.home.contextSelect
+* @param {Object} node 组件最外节点
+* @return {Object} 实例 
+* @example 
+* 
+*/
+
+/**
+ * 
+ * @id $.comp.home.contextSelect
+ * @param {Object} node 组件最外节点
+ * @return {Object} 实例
+ * @author gaoyuan3@staff.sina.com.cn
+ * @example
+ * 
+ */
 /**
  * 配置文件操作 接口管理
  * @author gaoyuan3@staff.sina.com.cn
@@ -1731,13 +1878,13 @@ STK.register('comp.home.contextSelect', function($){
 
 		//+++ 变量定义区 ++++++++++++++++++
 		var _this = {
-			DOM:{},//节点容器
 			objs:{
 				trans : {
 					editIni : {
 						selContextOfType : $.common.trans.editIni.getTrans('selContextOfType',{
 							'onSuccess': function (o) {
-								setTimeout(function() {location.reload('/home');},500);
+								clearTimeout(_this.reloadST);
+								_this.reloadST = setTimeout(function() {location.reload('/home');},500);
 								//console.log('trans.selContextOfType onSuccess');
 							},
 							'onError': function (o) {
@@ -1750,7 +1897,8 @@ STK.register('comp.home.contextSelect', function($){
 						}),
 						switchType : $.common.trans.editIni.getTrans('switchType',{
 							'onSuccess': function (o) {
-								setTimeout(function() {location.reload('/home');},500);
+								clearTimeout(_this.reloadST);
+								_this.reloadST = setTimeout(function() {location.reload('/home');},500);
 								//console.log('trans.switchType onSuccess');
 							},
 							'onError': function (o) {
@@ -1765,12 +1913,7 @@ STK.register('comp.home.contextSelect', function($){
 				}
 			},//组件容器
 			DOM_eventFun: {//DOM事件行为容器
-				clickReloadIniDataBtn : function (oEvt) {
-					$.ajax({
-						'url':'/aj/reloadIni'
-					});
-					setTimeout(function() {location.reload('/home');},1000);
-				}
+				
 			},
 			DEventFun : {
 				clickSwitchTypeBtn : function (oDEvt) {
@@ -1789,9 +1932,24 @@ STK.register('comp.home.contextSelect', function($){
 					_this.objs.setSvnDialog.show(oDEvt.data);
 					$.preventDefault();
 				}
-			}
+			},
 			//属性方法区
-			
+			checkRadio : function () {
+				$.foreach(_this.DOMs['typeRow'], function(o) {
+
+					$.removeClassName(o.eRadioLocal.parentNode, 'enable');
+					$.removeClassName(o.eRadioTest.parentNode, 'enable');
+
+					if(o.eCheckbox.checked) {
+						if(o.eRadioLocal.checked) {
+							$.addClassName(o.eRadioLocal.parentNode, 'enable');
+						}
+						if(o.eRadioTest.checked) {
+							$.addClassName(o.eRadioTest.parentNode, 'enable');
+						}
+					}
+				});
+			}
 		};
 		//----------------------------------------------
 
@@ -1808,11 +1966,17 @@ STK.register('comp.home.contextSelect', function($){
 		//+++ Dom的获取方法定义区 ++++++++++++++++++
 		parseDOM = function(){
 			//内部dom节点
-			_this.DOM = $.kit.dom.parseDOM($.builder(node).list);
+			_this.DOMs = $.builder(node).list;
+			var temp;
+			$.foreach(_this.DOMs['typeRow'], function(o) {
+				temp = $.sizzle('[action-type=contextSelBtn]', o);
+				o.eRadioLocal = temp[0];
+				o.eRadioTest = temp[1];
+				o.eCheckbox =  $.sizzle('[action-type=switchTypeBtn]', o)[0];
+			});
 			if(!1) {
 				throw new Error('comp.home.contextSelect 必需的节点 不存在');
 			}
-
 			
 		};
 		//-------------------------------------------
@@ -1820,7 +1984,12 @@ STK.register('comp.home.contextSelect', function($){
 
 		//+++ 模块的初始化方法定义区 ++++++++++++++++++
 		initPlugins = function(){
-			
+
+			_this.checkRadio();
+			var iSI = setInterval(function() {try{
+				_this.checkRadio();
+			}catch(e) {alert(e);clearInterval(iSI);}},500);
+
 		};
 		//-------------------------------------------
 
@@ -1832,7 +2001,6 @@ STK.register('comp.home.contextSelect', function($){
 			_this.objs.DEvent.add('contextSelBtn', 'click', _this.DEventFun.clickContextSelBtn);
 			_this.objs.DEvent.add('setSvnBtn', 'click', _this.DEventFun.clickSetSvnBtn);
 
-			$.addEvent(_this.DOM['reloadIniDataBtn'], 'click', _this.DOM_eventFun.clickReloadIniDataBtn);
 		};
 		//-------------------------------------------
 
@@ -2723,7 +2891,7 @@ STK.register('common.settingRuleList', function($){
 	//+++ 常量定义区 ++++++++++++++++++
 	//-------------------------------------------
 
-	return function(node){
+	return function(node, spec){
 		var argsCheck, parseDOM, initPlugins, bindDOM, bindCustEvt, bindListener, destroy, init, that = {};
 
 
@@ -2823,7 +2991,9 @@ STK.register('common.settingRuleList', function($){
 							_this.refreshSetttingRule(eRow, data);
 							//alert('refreshSetttingRule');
 						}else{
-							_this.removeRow(eRow);
+							if(spec.ifDisableToRemove) {
+								_this.removeRow(eRow);
+							}
 							//alert('removeRow');
 						}
 					}
@@ -2899,6 +3069,7 @@ STK.register('common.settingRuleList', function($){
 			if(!node) {
 				throw new Error('common.settingRuleList node 没有定义');
 			}
+			spec = spec || {};
 		};
 		//-------------------------------------------
 
@@ -3037,7 +3208,9 @@ STK.register('comp.home.currentContext', function($){
 
 		//+++ 模块的初始化方法定义区 ++++++++++++++++++
 		initPlugins = function(){
-			$.common.settingRuleList(_this.DOM['settingRuleList']);
+			$.common.settingRuleList(_this.DOM['settingRuleList'], {
+				ifDisableToRemove : true
+			});
 		};
 		//-------------------------------------------
 
@@ -3257,4 +3430,5 @@ STK.pageletM.register('pl.editSetting.settingList',function($){
 		return that;
 	}
 });
+
 
