@@ -1,3 +1,40 @@
+/*
+runTime: 0.0347
+fileTree:
+ +---- conf/all.js
+ |  +---- pl/home/iniInfo.js
+ |  |  +---- comp/home/iniInfo.js
+ |  |  |  +---- kit/dom/parseDOM.js
+ |  +---- pl/home/contextSelect.js
+ |  |  +---- comp/home/contextSelect.js
+ |  |  |  +---- common/trans/editIni.js
+ |  |  |  |  +---- kit/io/inter.js
+ |  |  |  |  |  +---- kit/io/ajax.js
+ |  |  |  |  |  |  +---- kit/extra/merge.js
+ |  |  |  |  |  +---- kit/io/jsonp.js
+ |  |  |  +---- common/dialog/setSvnDialog.js
+ |  |  |  |  +---- common/dialog.js
+ |  |  |  |  |  +---- module/dialog.js
+ |  |  |  |  |  |  +---- module/layer.js
+ |  |  |  |  |  +---- module/mask.js
+ |  |  |  |  |  |  +---- kit/dom/fix.js
+ |  |  |  |  |  |  |  +---- kit/dom/cssText.js
+ |  |  |  |  +---- common/trans/dialog.js
+ |  +---- pl/home/exRule.js
+ |  |  +---- comp/home/exRule.js
+ |  |  |  +---- common/dialog/setRuleDialog.js
+ |  |  |  |  +---- common/channel/rule.js
+ |  |  |  |  |  +---- common/listener.js
+ |  |  |  +---- kit/dom/parentElementBy.js
+ |  +---- pl/home/currentContext.js
+ |  |  +---- comp/home/currentContext.js
+ |  |  |  +---- common/settingRuleList.js
+ |  |  |  |  +---- common/dialog/getSetSettingRuleDialog.js
+ |  |  |  |  |  +---- common/channel/settingRule.js
+ |  +---- pl/editSetting/settingList.js
+ |  |  +---- comp/editSetting/settingList.js
+*/
+
 /**
 * 
 * @id $.pl.home.iniInfo
@@ -53,9 +90,11 @@ STK.register('comp.home.iniInfo', function($){
 			DOM_eventFun: {//DOM事件行为容器
 				clickReloadIniDataBtn : function (oEvt) {
 					$.ajax({
-						'url':'/aj/reloadIni'
+						'url':'/aj/reloadIni',
+						'onComplete': function () {
+							setTimeout(function() {location.reload('/home');},500);
+						},
 					});
-					setTimeout(function() {location.reload('/home');},1000);
 				}
 			}
 			//属性方法区
@@ -1884,7 +1923,7 @@ STK.register('comp.home.contextSelect', function($){
 						selContextOfType : $.common.trans.editIni.getTrans('selContextOfType',{
 							'onSuccess': function (o) {
 								clearTimeout(_this.reloadST);
-								_this.reloadST = setTimeout(function() {location.reload('/home');},500);
+								_this.reloadST = setTimeout(function() {location.reload('/home');},1500);
 								//console.log('trans.selContextOfType onSuccess');
 							},
 							'onError': function (o) {
@@ -1898,7 +1937,7 @@ STK.register('comp.home.contextSelect', function($){
 						switchType : $.common.trans.editIni.getTrans('switchType',{
 							'onSuccess': function (o) {
 								clearTimeout(_this.reloadST);
-								_this.reloadST = setTimeout(function() {location.reload('/home');},500);
+								_this.reloadST = setTimeout(function() {location.reload('/home');},1500);
 								//console.log('trans.switchType onSuccess');
 							},
 							'onError': function (o) {
@@ -2240,8 +2279,11 @@ STK.register('common.dialog.setRuleDialog', function($){
 				}
 			},//组件容器
 			DOM_eventFun: {//DOM事件行为容器
-				submitRuleDialogForm : function (oEvt) {//alert('submit');
-					_this.objs.trans.editIni.setRule.request($.htmlToJson(_this.DOM['setRuleDialogForm']));
+				submitRuleDialogForm : function (oEvt) {
+					var data = $.htmlToJson(_this.DOM['setRuleDialogForm']);
+					data.src = data.src.replace('http://', '');
+					data.target = data.target.replace('http://', '');
+					_this.objs.trans.editIni.setRule.request(data);
 					$.preventDefault();
 				}
 			},
@@ -2773,6 +2815,8 @@ STK.register('common.dialog.getSetSettingRuleDialog', function($){
 					}else{
 						data.able = false;
 					}
+					data.src = data.src.replace('http://', '');
+					data.target = data.target.replace('http://', '');console.log(data);
 					_this.objs.trans.editIni.setSettingRule.request(data);
 					$.preventDefault();		
 				}
@@ -3432,3 +3476,4 @@ STK.pageletM.register('pl.editSetting.settingList',function($){
 });
 
 
+//$Import('bigpipeM');
