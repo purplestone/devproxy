@@ -1,5 +1,5 @@
 /*
-runTime: 0.0347
+runTime: 0.0353
 fileTree:
  +---- conf/all.js
  |  +---- pl/home/iniInfo.js
@@ -2281,8 +2281,8 @@ STK.register('common.dialog.setRuleDialog', function($){
 			DOM_eventFun: {//DOM事件行为容器
 				submitRuleDialogForm : function (oEvt) {
 					var data = $.htmlToJson(_this.DOM['setRuleDialogForm']);
-					data.src = data.src.replace('http://', '');
-					data.target = data.target.replace('http://', '');
+					data.src && (data.src = data.src.replace(/^http:\/\/(.+)/, '$1'));
+					data.target && (data.target = data.target.replace(/^http:\/\/(.+)/, '$1'));
 					_this.objs.trans.editIni.setRule.request(data);
 					$.preventDefault();
 				}
@@ -2815,8 +2815,8 @@ STK.register('common.dialog.getSetSettingRuleDialog', function($){
 					}else{
 						data.able = false;
 					}
-					data.src = data.src.replace('http://', '');
-					data.target = data.target.replace('http://', '');console.log(data);
+					data.src && (data.src = data.src.replace(/^http:\/\/(.+)/, '$1'));
+					data.target && (data.target = data.target.replace(/^http:\/\/(.+)/, '$1'));
 					_this.objs.trans.editIni.setSettingRule.request(data);
 					$.preventDefault();		
 				}
