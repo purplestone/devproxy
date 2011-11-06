@@ -1,6 +1,6 @@
 
 /*
-runTime: 0.0261
+runTime: 0.0497
 fileTree:
  +---- conf/all.js
  |  +---- pl/home/iniInfo.js
@@ -2528,15 +2528,16 @@ STK.register('common.dialog.getSetLocalFileDialog', function($){
 							},
 							'onError': function (o, arg) {
 								that.hide();
-								alert(o.msg);
-								if(o.code == 100001) {
-									if(confirm('是否创建一个本地文件。')) {
-										_this.objs.trans.editIni.setLocalFileContent.request({
+								if(o.code == 100001 && o.data.act === 'edit') {
+									if(confirm('本地文件不存在，是否创建一个文件? \n' + o.data.tempFilePath)) {
+										_this.show({
 											act : 'add',
 											path : arg.path,
 											text : '{"code":"100000","data":"xxxxxxxxxxxx","msg":"ok"}'
 										});
 									}
+								}else{
+									alert(o.msg);
 								}
 							},
 							'onFail': function (o) {
@@ -2546,11 +2547,7 @@ STK.register('common.dialog.getSetLocalFileDialog', function($){
 					editIni : {
 						setLocalFileContent : $.common.trans.editIni.getTrans('setLocalFileContent',{
 							'onSuccess': function (o, arg) {
-								if(arg.act === 'add') {
-									that.show(arg);
-								}else{
-									that.hide();
-								}
+								that.hide();
 							},
 							'onError': function (o) {
 								alert(o.msg);

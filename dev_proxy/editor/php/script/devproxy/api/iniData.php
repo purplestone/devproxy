@@ -679,7 +679,9 @@ class iniData {
 			}
 		}else{
 			$sContentFile = '文件：' . $sTempFilePath . ' 不存在。';
-			$apiMsg = createApiMsg('100001', null, $sContentFile);
+			$apiMsg = createApiMsg('100001', array(
+					'tempFilePath' => $sTempFilePath,
+			), $sContentFile);
 		}
 		return $apiMsg;
 	}
@@ -690,16 +692,15 @@ class iniData {
 		}
 		$sTempFilePath = $this->fixLocalFilePath($path);
 		if(file_exists($sTempFilePath)) {
-			try{
+			if(is_writable($sTempFilePath)) {
 				$r = file_put_contents($sTempFilePath, $text);
-				if(!$r) {
-					throw new Exception();
-				}
 				$apiMsg = createApiMsg('100000', array(
 					'text' => $text,
 					'path' => $path,
+					'act' => 'edit',
 				), 'ok');
-			}catch (Exception $e) {
+				
+			}else{
 				$sContentFile = '文件：' . $sTempFilePath . ' 无法写入。';
 				$apiMsg = createApiMsg('100003', null, $sContentFile);
 			}
@@ -712,16 +713,23 @@ class iniData {
 	
 	public function addLocalFile($path, $text) {
 		$sTempFilePath = $this->fixLocalFilePath($path);
-		@$f = fopen($sTempFilePath, 'w');
-		@fclose($f);
-		@$r = file_put_contents($sTempFilePath, ' ');
-
-		if($r) {
+		$oPathInfo = pathinfo($sTempFilePath);
+		if(is_writable($sTempFilePath)) {
+			file_put_contents($sTempFilePath, '');
 			$apiMsg =  $this->setLocalFile($path, $text);
 		}else{
-			$sContentFile = '文件：' . $sTempFilePath . ' 无法写入。';
-			$apiMsg = createApiMsg('100003', null, $sContentFile);
+			@mkdir($oPathInfo['dirname']);
+			@$f = fopen($sTempFilePath, 'w');
+			fwrite($f, $text);
+			@fclose($f);
+			if(is_writable($sTempFilePath)) {
+				$apiMsg = createApiMsg('100000', null, $sContentFile);
+			}else{
+				$sContentFile = '文件：' . $sTempFilePath . ' 无法写入。';
+				$apiMsg = createApiMsg('100003', null, $sContentFile);
+			}
 		}
+
 
 		return $apiMsg;
 	}

@@ -8,6 +8,8 @@ $trans = new Trans();
 
 $requery = array(
 	'path' => getPost('path'),
+	'text' => getPost('text', ''),
+	'act' => getPost('act', 'edit'),
 );
 
 if(!$requery['path']) {
@@ -33,18 +35,47 @@ if(isset($errorMsg)) {
 
 
 
-$iniData = new iniData();
-$apiMsg = $iniData->getLocalFile($requery['path']);
 
-if($apiMsg['code'] == '100000') {
-	$data = $apiMsg['data'];
-	$data['act'] = 'edit';
+$errorMsg = flowByKey('act', $requery['act'], array('add', 'edit'));
+
+function flow_add() {
+	global $trans, $requery;
+	$iniData = new iniData();
+	$data = array(
+		'act' => 'add',
+		'path' => $requery['path'],
+		'text' => $requery['text'],
+		'tempFilePath' => $iniData->fixLocalFilePath($requery['path']),
+	);
 	$tpl = new Page($data);
-	$apiMsg['data'] = $tpl->fetch('lump/getSetLocalFileDialog.tpl');
+	$trans->response(createApiMsg('100000', $tpl->fetch('lump/getSetLocalFileDialog.tpl'), 'ok'));
 }
 
-$trans->response($apiMsg);
 
+function flow_edit() {
+	global $trans, $requery;
+	$iniData = new iniData();
+	$apiMsg = $iniData->getLocalFile($requery['path']);
+
+	$apiMsg['data']['act'] = 'edit';
+
+	if($apiMsg['code'] == '100000') {
+		$data = $apiMsg['data'];
+		$data['act'] = 'edit';
+		$tpl = new Page($data);
+		$apiMsg['data'] = $tpl->fetch('lump/getSetLocalFileDialog.tpl');
+	}
+
+	$trans->response($apiMsg);
+
+
+
+}
+
+
+if($errorMsg) {
+	$trans->response('100001', null, $errorMsg);
+}
 
 
 

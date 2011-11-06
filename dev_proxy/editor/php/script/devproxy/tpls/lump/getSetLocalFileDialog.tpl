@@ -2,7 +2,7 @@
 
 {% block name='dialogStyle' %}{% /block %}
 
-{% block name="title" %}编辑本地文件{% /block %}
+{% block name="title" %}{% if $act == 'edit' %}编辑{% else %}创建{% /if %}本地文件{% /block %}
 
 {% block name="inner" %}
 <form method="post" action="/aj/setLocalFileContent" node-type="setLocalFileForm" target="_blank">
