@@ -51,6 +51,7 @@ class iniData {
 					'context' => 'test',
 					'type' => $type,
 					'able' => $unit[3],
+					'isLocalFile' => $unit[4],
 				);
 			}
 		}
@@ -602,7 +603,7 @@ class iniData {
 					$apiMsg['msg'] = $sErrorMsg.' '.$apiMsg['msg'];
 				}
 				if($apiMsg['code'] === '100000') {
-					$apiMsg = $this->addSettingRule($context, $type, $src, $target, $able);
+					$apiMsg = $this->addSettingRule($context, $type, $src, $target, $able, $isLocalFile);
 					
 				}
 			}

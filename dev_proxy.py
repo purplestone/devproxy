@@ -126,7 +126,7 @@ class ProxyHandler (BaseHTTPServer.BaseHTTPRequestHandler):
             try:
                 oF = open(warp_path.__str__())
                 sHttpBody = oF.read()
-                print(sHttpBody)
+                #print(sHttpBody)
                 oF.close()
                 self.send_response(200)
                 self.send_header('Content-type', 'text/html')

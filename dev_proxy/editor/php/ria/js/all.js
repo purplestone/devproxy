@@ -1,6 +1,6 @@
 
 /*
-runTime: 0.0497
+runTime: 0.0387
 fileTree:
  +---- conf/all.js
  |  +---- pl/home/iniInfo.js
@@ -2528,7 +2528,7 @@ STK.register('common.dialog.getSetLocalFileDialog', function($){
 							},
 							'onError': function (o, arg) {
 								that.hide();
-								if(o.code == 100001 && o.data.act === 'edit') {
+								if(o.code == 100001 && o.data && o.data.act === 'edit') {
 									if(confirm('本地文件不存在，是否创建一个文件? \n' + o.data.tempFilePath)) {
 										_this.show({
 											act : 'add',
@@ -3284,7 +3284,7 @@ STK.register('common.settingRuleList', function($){
 						}
 					}
 				},
-				settingRuleAdd : function (data) {debugger;
+				settingRuleAdd : function (data) {
 					_this.addSettingRule(data);
 				}
 			},

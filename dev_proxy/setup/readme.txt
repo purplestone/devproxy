@@ -29,7 +29,10 @@
 	</Directory>
 </VirtualHost>
 
-================================
+
+#将 php.ini 中将报错设置去掉notice： error_reporting = E_ALL & ~E_NOTICE | E_STRICT
+
+=============== 然后重启apache =================
 
 
 
