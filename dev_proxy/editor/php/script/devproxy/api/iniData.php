@@ -38,6 +38,7 @@ class iniData {
 					'context' => 'local',
 					'type' => $type,
 					'able' => $unit[3],
+					'isLocalFile' => $unit[4],
 				);
 			}
 		}
@@ -123,6 +124,7 @@ class iniData {
 							'src' => $u[1],
 							'target' => $u[2],
 							'able' => $u[3],
+							'isLocalFile' => $u[4],
 						), '');
 						break;
 					}
@@ -152,6 +154,7 @@ class iniData {
 				'src' => $u[1],
 				'target' => $u[2],
 				'able' => $u[3],
+				'isLocalFile' => $u[4],
 			);
 		}
 		return $data;
@@ -186,6 +189,7 @@ class iniData {
 						'type' => $type,
 						'context' => $context,
 						'able' => $rule[3],
+						'isLocalFile' => $rule[4],
 					);
 				}
 			}
@@ -227,7 +231,7 @@ class iniData {
 		$this->saveIni();
 	}
 
-	public function addRule($table, $src, $target, $able) {
+	public function addRule($table, $src, $target, $able, $isLocalFile) {
 		switch($table) {
 			case 'ex':
 				$data = $this->oIni->ex;
@@ -268,7 +272,7 @@ class iniData {
 
 		if(!isset($apiMsg)) {
 			$data->counter++;
-			$data->table[] = array($data->counter, $src, $target, !!$able);
+			$data->table[] = array($data->counter, $src, $target, !!$able, !!$isLocalFile);
 
 			$apiMsg = createApiMsg('100000', array('id' => $data->counter), 'ok');
 			$this->saveIni();
@@ -334,7 +338,7 @@ class iniData {
 	}
 
 
-	public function setRule($table, $id, $src, $target, $able) {
+	public function setRule($table, $id, $src, $target, $able, $isLocalFile) {
 		switch($table) {
 			case 'ex':
 				$data = &$this->oIni->ex->table;
@@ -380,6 +384,7 @@ class iniData {
 				$u[1] = $src;
 				$u[2] = $target;
 				$u[3] = $able;
+				$u[4] = $isLocalFile;
 				$apiMsg = createApiMsg('100000', null, 'ok');
 				$this->saveIni();
 			}else{
@@ -446,7 +451,7 @@ class iniData {
 	}
 
 
-	public function addSettingRule($context, $type, $src, $target, $able) {
+	public function addSettingRule($context, $type, $src, $target, $able, $isLocalFile) {
 		$apiMsg = null;
 
 		if(!$apiMsg) {
@@ -462,7 +467,7 @@ class iniData {
 			$table = &$this->oIni->condition->$context->setting->$type;
 
 			$table->counter++;
-			$table->table[] = array($table->counter, $src, $target, !!$able);
+			$table->table[] = array($table->counter, $src, $target, !!$able, !!$isLocalFile);
 
 			$apiMsg = createApiMsg('100000', array('id' => $table->counter), 'ok');
 
@@ -504,6 +509,7 @@ class iniData {
 					'src' => $u[1],
 					'target' => $u[2],
 					'able' => $u[3],
+					'isLocalFile' => $u[4],
 				), 'ok');
 			}
 		}
@@ -544,7 +550,7 @@ class iniData {
 	}
 	
 
-	public function setSettingRule($id, $src_context, $src_type, $context, $type, $src, $target, $able) {
+	public function setSettingRule($id, $src_context, $src_type, $context, $type, $src, $target, $able, $isLocalFile) {
 		global $debugger;
 
 		$apiMsg = null;
@@ -574,6 +580,7 @@ class iniData {
 					$u['1'] = $src;
 					$u['2'] = $target;
 					$u['3'] = $able;
+					$u['4'] = $isLocalFile;
 					$this->saveIni();
 					$apiMsg = createApiMsg('100000', null, 'ok');
 				}else{
@@ -646,6 +653,78 @@ class iniData {
 
 	}
 
+	public function fixLocalFilePath($path) {
+		global $sIniPath;
+		$path = addPathRootSlashes($path);
+		$pathInfo = pathinfo($sIniPath);
+		$sTempFilePath = $pathInfo['dirname'] . '/devproxy_temp_file' . $path;
+		return $sTempFilePath;
+		
+	}
+	
+
+	public function getLocalFile($path) {
+		$sTempFilePath = $this->fixLocalFilePath($path);
+		if(file_exists($sTempFilePath)) {
+			try{
+				$sContentFile = file_get_contents($sTempFilePath);
+				$apiMsg = createApiMsg('100000', array(
+					'tempFilePath' => $sTempFilePath,
+					'path' => $path,
+					'text' => $sContentFile,
+				), 'ok');
+			}catch (Exception $e) {
+				$sContentFile = '文件：' . $sTempFilePath . ' 无法读取。';
+				$apiMsg = createApiMsg('100003', null, $sContentFile);
+			}
+		}else{
+			$sContentFile = '文件：' . $sTempFilePath . ' 不存在。';
+			$apiMsg = createApiMsg('100001', null, $sContentFile);
+		}
+		return $apiMsg;
+	}
+
+	public function setLocalFile($path, $text=' ') {
+		if(!$text) {
+			$text = ' ';
+		}
+		$sTempFilePath = $this->fixLocalFilePath($path);
+		if(file_exists($sTempFilePath)) {
+			try{
+				$r = file_put_contents($sTempFilePath, $text);
+				if(!$r) {
+					throw new Exception();
+				}
+				$apiMsg = createApiMsg('100000', array(
+					'text' => $text,
+					'path' => $path,
+				), 'ok');
+			}catch (Exception $e) {
+				$sContentFile = '文件：' . $sTempFilePath . ' 无法写入。';
+				$apiMsg = createApiMsg('100003', null, $sContentFile);
+			}
+		}else{
+			$sContentFile = '文件：' . $sTempFilePath . ' 不存在。';
+			$apiMsg = createApiMsg('100001', null, $sContentFile);
+		}
+		return $apiMsg;
+	}
+	
+	public function addLocalFile($path, $text) {
+		$sTempFilePath = $this->fixLocalFilePath($path);
+		@$f = fopen($sTempFilePath, 'w');
+		@fclose($f);
+		@$r = file_put_contents($sTempFilePath, ' ');
+
+		if($r) {
+			$apiMsg =  $this->setLocalFile($path, $text);
+		}else{
+			$sContentFile = '文件：' . $sTempFilePath . ' 无法写入。';
+			$apiMsg = createApiMsg('100003', null, $sContentFile);
+		}
+
+		return $apiMsg;
+	}
 
 	public function setSvnUpCmd($type, $cmd) {
 		global $debugger;

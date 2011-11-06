@@ -13,6 +13,7 @@ $requery = array(
 	'src' => getPost('src'),
 	'target' => getPost('target'),
 	'able' => fixBoolean(getPost('able')),
+	'befile' => fixBoolean(getPost('befile')),
 	'src_context' => getPost('src_context'),
 	'context' => getPost('context'),
 	'src_type' => getPost('src_type'),
@@ -42,7 +43,7 @@ function flow_add() {
 
 	$iniData = new iniData();
 
-	$apiMsg = $iniData->addSettingRule($requery['context'], $requery['type'], $requery['src'], $requery['target'], $requery['able']);
+	$apiMsg = $iniData->addSettingRule($requery['context'], $requery['type'], $requery['src'], $requery['target'], $requery['able'], $requery['befile']);
 
 	if($apiMsg['code'] === '100000') {
 		$data = array(
@@ -50,6 +51,7 @@ function flow_add() {
 			'src' => $requery['src'],
 			'target' => $requery['target'],
 			'able' => $requery['able'],
+			'isLocalFile' => $requery['befile'],
 			'context' => $requery['context'],
 			'type' => $requery['type'],
 		);
@@ -60,6 +62,7 @@ function flow_add() {
 				'src' => $requery['src'],
 				'target' => $requery['target'],
 				'able' => $requery['able'],
+				'isLocalFile' => $requery['befile'],
 				'type' => $requery['type'],
 				'context' => $requery['context'],
 			)	
@@ -89,7 +92,7 @@ function flow_edit() {
 	if($requery['src'] === null || $requery['target'] === null) {
 		$apiMsg = $iniData->switchSettingRule($requery['id'], $requery['src_context'], $requery['src_type'], $requery['able']);
 	}else{
-		$apiMsg = $iniData->setSettingRule($requery['id'], $requery['src_context'], $requery['src_type'], $requery['context'], $requery['type'], $requery['src'], $requery['target'], $requery['able']);
+		$apiMsg = $iniData->setSettingRule($requery['id'], $requery['src_context'], $requery['src_type'], $requery['context'], $requery['type'], $requery['src'], $requery['target'], $requery['able'], $requery['befile']);
 	}
 
 	if(!$apiMsg['data']) {
@@ -103,11 +106,16 @@ function flow_edit() {
 		'able' => $requery['able'],
 		'context' => $requery['context'],
 		'type' => $requery['type'],
+		'isLocalFile' => $requery['befile'],
 		'src_id' => $requery['id'],
 		'src_context' => $requery['src_context'],
 		'src_type' => $requery['src_type'],
 		'currentSetting' => $iniData->getCurrentSetting(),
 	));
+	$tpl = new Page(array(
+		'settingRow' => $apiMsg['data'],
+	));
+	$apiMsg['data']['html'] = $tpl->fetch('lump/settingRuleRow.tpl');
 	$trans->response($apiMsg);
 }
 

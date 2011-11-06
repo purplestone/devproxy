@@ -45,6 +45,7 @@ function flow_add() {
 		'table' => $requery['table'],
 		'able' => true,
 		'hasAble' => true,
+		'islocalFile' => false,
 	);
 	$tpl = new Page($data);
 	$trans->response('100000', $tpl->fetch('lump/ruleDialog.tpl'), 'ok');
@@ -63,6 +64,7 @@ function flow_edit() {
 			'src' => $u['src'],
 			'target' => $u['target'],
 			'able' => fixBoolean($u['able']),
+			'isLocalFile' => fixBoolean($u['isLocalFile']),
 
 			'table' => $requery['table'],
 			'act' => $requery['act'],

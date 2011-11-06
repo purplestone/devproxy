@@ -1,7 +1,13 @@
 
 						<tr node-type="row_{% $settingRow['context'] %}_{% $settingRow['type'] %}_{% $settingRow['id'] %}" info="id={% $settingRow['id'] %}" class="_e_settingRuleRow{% if !$settingRow['able'] %} disable{% /if %}">
 							<td node-type="srcReg">{% $settingRow['src'] %}</td>
-							<td node-type="targetReg">{% $settingRow['target'] %}</td>
+							<td node-type="targetReg">
+								{% if $settingRow['isLocalFile'] %}
+									<a href="#" class="localFile" action-type="setLocalFileBtn" action-data="path={% $settingRow['target']|unescape:html|escape:url %}">{% $settingRow['target'] %}</a>
+								{% else %}
+									{% $settingRow['target'] %}
+								{% /if %}
+							</td>
 							<td node-type="context">{% $settingRow['context'] %}</td>
 							<td node-type="type">{% $settingRow['type'] %}</td>
 							<td>

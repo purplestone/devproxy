@@ -14,6 +14,7 @@ $requery = array(
 	'src' => getPost('src'),
 	'target' => getPost('target'),
 	'able' => fixBoolean(getPost('able')),
+	'befile' => fixBoolean(getPost('befile')),
 );
 
 if(!$requery['act']) {
@@ -38,7 +39,7 @@ function flow_add() {
 
 	$iniData = new iniData();
 
-	$apiMsg = $iniData->addRule($requery['table'], $requery['src'], $requery['target'], $requery['able']);
+	$apiMsg = $iniData->addRule($requery['table'], $requery['src'], $requery['target'], $requery['able'], $requery['befile']);
 
 	if($apiMsg['code'] === '100000') {
 		$data = array(
@@ -46,6 +47,7 @@ function flow_add() {
 			'act' => 'add',
 			'target' => $requery['target'],
 			'able' => $requery['able'],
+			'isLocalFile' => $requery['befile'],
 			'table' => $requery['table']
 		);
 
@@ -54,7 +56,8 @@ function flow_add() {
 				'id' => $apiMsg['data']['id'],
 				'src' => $requery['src'],
 				'target' => $requery['target'],
-				'able' => $requery['able']
+				'able' => $requery['able'],
+				'isLocalFile' => $requery['befile'],
 			)	
 		));
 
@@ -75,14 +78,21 @@ function flow_edit() {
 	if($requery['src'] === null || $requery['target'] === null) {
 		$apiMsg = $iniData->switchRule($requery['table'], $requery['id'], $requery['able']);
 	}else{
-		$apiMsg = $iniData->setRule($requery['table'], $requery['id'], $requery['src'], $requery['target'], $requery['able']);
+		$apiMsg = $iniData->setRule($requery['table'], $requery['id'], $requery['src'], $requery['target'], $requery['able'], $requery['befile']);
 		$apiMsg['data'] = array(
 			'src' => $requery['src'],
 			'act' => 'edit',
 			'target' => $requery['target'],
 			'able' => $requery['able'],
+			'isLocalFile' => $requery['befile'],
 			'id' => $requery['id'],
 		);
+		if($apiMsg['code'] == 100000) {
+			$tpl = new Page(array(
+				'exRuleRow' => $apiMsg['data']	
+			));
+			$apiMsg['data']['html'] = $tpl->fetch('lump/exRuleRow.tpl');
+		}
 	}
 
 

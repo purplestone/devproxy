@@ -1,4 +1,5 @@
 #!/usr/bin/python
+#coding=utf-8
 
 __doc__ = """
 proxy for local debug develop
@@ -47,7 +48,7 @@ class ProxyHandler (BaseHTTPServer.BaseHTTPRequestHandler):
     __base = BaseHTTPServer.BaseHTTPRequestHandler
     __base_handle = __base.handle
 
-    server_version = "TinyHTTPProxy/" + __version__
+    server_version = "TinyHTTPProxy - devproxy/" + __version__
     rbufsize = 0                        # self.rfile Be unbuffered
 
     def handle(self):
@@ -109,7 +110,8 @@ class ProxyHandler (BaseHTTPServer.BaseHTTPRequestHandler):
             finally:
                 return False
         warp_path = warp_url(self.path)
-        if str(warp_path) != str(self.path):
+        #warp_path.str = 'E:\ggg_toy\install_rar\devproxy.ini'
+        if warp_path.__str__() != self.path:
             print 
             printLog(self.server.logger, '-----------------------------------------')
             #print(self.path)
@@ -119,66 +121,82 @@ class ProxyHandler (BaseHTTPServer.BaseHTTPRequestHandler):
             printLog(self.server.logger, warp_path)
             print('-----------------------------------------')
             print 
-        #gpy.var_dump(proxy_ini)
-        #print(warp_path.host)
-        (scm, netloc, path, params, query, fragment) = urlparse.urlparse(
-            warp_path.__str__(), 'http')
-        if path == '':
-            path = '/'
-        #gpy.var_dump((scm, netloc, path, params, query, fragment))
-        if scm not in ('http', 'ftp') or fragment or not netloc:
-            self.send_error(400, "bad url %s" % self.path)
-            return
-        soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        #self.headers.headers[0] = 'Host: ggggggg.com\r\n'
-        #gpy.var_dump(self)
-        try:
-            if scm == 'http':
-                if self._connect_to(netloc, soc):
-                    self.log_request()
-                    soc.send("%s %s %s\r\n" % (self.command,
-                                               urlparse.urlunparse(('', '', path,
-                                                                    params, query,
-                                                                    '')),
-                                               self.request_version))
-                    #gpy.var_dump(self.headers)
-                    #soc.send("aaaaa: aaaaa\r\n")
-                    soc.send("devproxy-ini: "+sIniPath+"\r\n")
-                    self.headers['Connection'] = 'close'
-                    del self.headers['Proxy-Connection']
-                    for key_val in self.headers.items():
-                        if key_val[0] == 'host':
-                            header_unit = "%s: %s\r\n" % ('host', warp_path.host)
-                        else:
-                            header_unit = "%s: %s\r\n" % key_val
-                        #header_unit = "%s: %s\r\n" % key_val
-                        #print(header_unit)
-                        soc.send(header_unit)
-                        
-                    soc.send("\r\n")
-                    self._read_write(soc)
-                    #gpy.var_dump(soc)
-            elif scm == 'ftp':
-                # fish out user and password information
-                i = netloc.find ('@')
-                if i >= 0:
-                    login_info, netloc = netloc[:i], netloc[i+1:]
-                    try: user, passwd = login_info.split (':', 1)
-                    except ValueError: user, passwd = "anonymous", None
-                else: user, passwd ="anonymous", None
-                self.log_request ()
-                try:
-                    ftp = ftplib.FTP (netloc)
-                    ftp.login (user, passwd)
-                    if self.command == "GET":
-                        ftp.retrbinary ("RETR %s"%path, self.connection.send)
-                    ftp.quit ()
-                except Exception, e:
-                    self.server.logger.log (logging.WARNING, "FTP Exception: %s",
-                                            e)
-        finally:
-            soc.close()
-            self.connection.close()
+
+        if warp_path.isLocalFile:
+            try:
+                oF = open(warp_path.__str__())
+                sHttpBody = oF.read()
+                print(sHttpBody)
+                oF.close()
+                self.send_response(200)
+                self.send_header('Content-type', 'text/html')
+                self.end_headers()
+                self.wfile.write(sHttpBody)
+            except :
+                sHttpBody = 'devpoxy error: Not Found File: ' + warp_path.__str__()
+                self.send_error(404, sHttpBody)
+
+
+        else:
+            #gpy.var_dump(proxy_ini)
+            #print(warp_path.host)
+            (scm, netloc, path, params, query, fragment) = urlparse.urlparse(warp_path.__str__(), 'http')
+            if path == '':
+                path = '/'
+            #gpy.var_dump((scm, netloc, path, params, query, fragment))
+            if scm not in ('http', 'ftp') or fragment or not netloc:
+                self.send_error(400, "bad url %s" % self.path)
+                return
+            soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            #self.headers.headers[0] = 'Host: ggggggg.com\r\n'
+            #gpy.var_dump(self)
+            try:
+                if scm == 'http':
+                    if self._connect_to(netloc, soc):
+                        self.log_request()
+                        soc.send("%s %s %s\r\n" % (self.command,
+                                                   urlparse.urlunparse(('', '', path,
+                                                                        params, query,
+                                                                        '')),
+                                                   self.request_version))
+                        #gpy.var_dump(self.headers)
+                        #soc.send("aaaaa: aaaaa\r\n")
+                        soc.send("devproxy-ini: "+sIniPath+"\r\n")
+                        self.headers['Connection'] = 'close'
+                        del self.headers['Proxy-Connection']
+                        for key_val in self.headers.items():
+                            if key_val[0] == 'host':
+                                header_unit = "%s: %s\r\n" % ('host', warp_path.host)
+                            else:
+                                header_unit = "%s: %s\r\n" % key_val
+                            #header_unit = "%s: %s\r\n" % key_val
+                            #print(header_unit)
+                            soc.send(header_unit)
+                            
+                        soc.send("\r\n")
+                        self._read_write(soc)
+                        #gpy.var_dump(soc)
+                elif scm == 'ftp':
+                    # fish out user and password information
+                    i = netloc.find ('@')
+                    if i >= 0:
+                        login_info, netloc = netloc[:i], netloc[i+1:]
+                        try: user, passwd = login_info.split (':', 1)
+                        except ValueError: user, passwd = "anonymous", None
+                    else: user, passwd ="anonymous", None
+                    self.log_request ()
+                    try:
+                        ftp = ftplib.FTP (netloc)
+                        ftp.login (user, passwd)
+                        if self.command == "GET":
+                            ftp.retrbinary ("RETR %s"%path, self.connection.send)
+                        ftp.quit ()
+                    except Exception, e:
+                        self.server.logger.log (logging.WARNING, "FTP Exception: %s",
+                                                e)
+            finally:
+                soc.close()
+                self.connection.close()
 
     def _read_write(self, soc, max_idling=20, local=False):
         #print('===== _read_write =====')
@@ -400,6 +418,7 @@ def main ():
 def formatJson(sFilePath):
     oF = open(sFilePath)
     s = oF.read()
+    oF.close()
 
     sJ = simplejson.dumps(simplejson.loads(s), indent=4)
 
@@ -409,27 +428,41 @@ def formatJson(sFilePath):
 
 
 
+class Url():
+    def __init__(self, s):
+        self.str = s
+        self.isLocalFile = False
+        rSearchHost = re.search(r'\/\/([^/]+)', s)
+        if rSearchHost:
+            self.host = rSearchHost.group(1)
+
+    def __str__(self):
+        return self.str
+    
 def warp_url(sUrl):
-    class Url():
-        def __init__(self, s):
-            self.str = s
-            self.host = re.search(r'\/\/([^/]+)', s).group(1)
-        def __str__(self):
-            return self.str
-        
-        
     #print('warp_url proxy_ini')
-    #print(proxy_ini)
+    oUrl = False
+
     for tUrl in proxy_ini:
         rUrl = re.compile('(?:http://|https://)'+tUrl[0])
         sReUrl = 'http://'+tUrl[1].replace('$', '\\')
         if rUrl.match(sUrl):
-            #gpy.var_dump((tUrl[0], sReUrl, sUrl))
             sUrl = rUrl.sub(sReUrl,sUrl)
+            #sUrl = '\devproxy.ini'
+            if tUrl[2]:
+                sCDir = gpy.cur_file_dir()
+                r = re.compile(r'^http://')
+                sUrl = sCDir + '/devproxy_temp_file' + r.sub('', sUrl)
+            oUrl = Url(sUrl)
+            oUrl.isLocalFile = tUrl[2]
             break
     #return sUrl
-    return Url(sUrl)
-
+    #print('%%%%%')
+    #gpy.var_dump(proxy_ini)
+    #print('%%%%%')
+    if not oUrl:
+        oUrl = Url(sUrl)
+    return oUrl
 
 def printLog(obj, str):
     print(str)
@@ -447,15 +480,15 @@ def getIni(logger):
     printLog(logger, sExIniPath + sIniPath)
     print
     #print(proxy_ini)
-
+    oIniFile = open(sIniPath)
     if bOldVerIni:
-        sIni = open(sIniPath).read()
+        sIni = oIniFile.read()
         allRule = eval('['+sIni+']')
     else:
-        sIni = open(sIniPath).read()
+        sIni = oIniFile.read()
         proxy_ini = simplejson.loads(sIni)
         exRuleList = filter(lambda u: u[3], proxy_ini['ex']['table'])
-        exRuleList = [[u[1], u[2]] for u in exRuleList]
+        exRuleList = [[u[1], u[2], u[4]] for u in exRuleList]
 
         currentIniAbleList = filter(lambda u:proxy_ini['currentIni'][u]['able'], proxy_ini['currentIni'])
         currentSettingTableList = [proxy_ini['condition'][proxy_ini['currentIni'][u]['context']]['setting'][u]['table'] for u in currentIniAbleList]
@@ -463,10 +496,13 @@ def getIni(logger):
         for table in currentSettingTableList:
             currentSettingRuleList += table
         currentSettingRuleList = filter(lambda u:u[3], currentSettingRuleList)
-        currentSettingRuleList = [[u[1], u[2]] for u in currentSettingRuleList]
+        gpy.var_dump(currentSettingRuleList)
+        currentSettingRuleList = [[u[1], u[2], u[4]] for u in currentSettingRuleList]
 
         allRule= currentSettingRuleList + exRuleList
     
+
+    oIniFile.close()
     for u in allRule:
         #print(u[0] + '               ' + u[1])
         printLog(logger, u[0] + '               ' + u[1])
@@ -476,6 +512,7 @@ def getIni(logger):
     printLog(logger, '++++++++++++++++++++++++++++++++++++++++++')
     print
     proxy_ini = allRule
+
     #gpy.var_dump(proxy_ini)
     return allRule
 
@@ -498,10 +535,12 @@ def parseTemplate(sFileName, sDir):
     sTargetPath = sDir + '/' + sFileName
     #print(sTargetPath)
     sTpl = oFile.read()
+    oFile.close()
     sTpl = sTpl.replace('{$$$dir$$$}', sDir)
     #print(sTpl)
     oFile=open(sTargetPath, 'w') 
     oFile.write(sTpl)
+    oFile.close()
     return sTpl
 
 

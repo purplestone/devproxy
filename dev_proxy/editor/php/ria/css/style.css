@@ -7,6 +7,11 @@ body {font-size:12px;padding:0.5em 1em;font-family:tahoma;}
 .tableStyle tr:hover {background-color:#def;}
 #pl_home_contextSelect tr:hover {background-color:#fffcea;}
 
+a:link, a:visited {color:blue;}
+a:hover, a:active {color:red;text-decoration:underline;}
+
+a.localFile:link, a.localFile:visited, a.localFile:hover, a.localFile:active {color:#063;text-decoration:underline;}
+
 #home {margin:10px 0 0;}
 #pl_home_contextSelect { margin-bottom:1em;background-color:#fff6e1;border:#cb9 1px solid;}
 #pl_home_exRule { margin-bottom:1em;}
@@ -24,6 +29,8 @@ body {font-size:12px;padding:0.5em 1em;font-family:tahoma;}
 .dialogU {clear:both;padding:0.5em 0;}
 .dialogT {float:left;width:4em;padding:0 0.5em 0 0;}
 .dialogB {float:left;}
+.isLocalFile {line-height:2em;}
+.enableRule {float:right;}
 .dialogF {padding:1em 0;clear:both;text-align:right;}
 .cmdInput {width:550px;height:250px;}
 .ruleInput {width:550px;height:70px;}

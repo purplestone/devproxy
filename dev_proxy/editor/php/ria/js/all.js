@@ -1,5 +1,6 @@
+
 /*
-runTime: 0.0353
+runTime: 0.0261
 fileTree:
  +---- conf/all.js
  |  +---- pl/home/iniInfo.js
@@ -26,6 +27,7 @@ fileTree:
  |  |  |  |  +---- common/channel/rule.js
  |  |  |  |  |  +---- common/listener.js
  |  |  |  +---- kit/dom/parentElementBy.js
+ |  |  |  +---- common/dialog/getSetLocalFileDialog.js
  |  +---- pl/home/currentContext.js
  |  |  +---- comp/home/currentContext.js
  |  |  |  +---- common/settingRuleList.js
@@ -284,13 +286,19 @@ STK.register('kit.io.ajax', function($) {
 		
 		complete = function(res){
 			lock = false;
-			args.onComplete(res, conf['args']);
+			if(args.onComplete) {
+				args.onComplete(res, conf['args']);
+			}
+			
 			setTimeout(nextRequest,0);//跳出递归
 		};
 		
 		fail = function(res){
 			lock = false;
-			args.onFail(res, conf['args']);
+			if(args.onFail) {
+				args.onFail(res, conf['args']);
+			}
+			
 			setTimeout(nextRequest,0);//跳出递归
 		};
 		
@@ -328,11 +336,11 @@ STK.register('kit.io.ajax', function($) {
 			}
 			lock = false;
 			if(current){
-				try{
+				//try{
 					current.abort();
-				}catch(exp){
+				//}catch(exp){
 				
-				}
+				//}
 			}
 			current = null;
 		};
@@ -469,34 +477,40 @@ STK.register('kit.io.inter',function($){
 		
 			var conf = $.kit.extra.merge(argsList[name], spec);
 			conf.onComplete = function(req, params){
-				try{
+				//try{
+				if(spec.onComplete) {
 					spec.onComplete(req, params);
-				}catch(exp){
-				
 				}
+				//}catch(exp){
+				
+				//}
 				if(req['code'] === '100000'){
-					try{
-						spec.onSuccess(req, params);
-					}catch(exp){
+					//try{
+						if(spec.onSuccess) {
+							spec.onSuccess(req, params);
+						}
+					//}catch(exp){
 						
-					}
+					//}
 				}else{
-					try{
+					//try{
 						if(req['code'] === '100002'){
 							window.location.href=req['data'];
 							return;
 						}
-						spec.onError(req, params);
-					}catch(exp){
+						if(spec.onError) {
+							spec.onError(req, params);
+						}
+					//}catch(exp){
 
-					}
+					//}
 				}
 				for(var k in hookList[name]){
-					try{
+					//try{
 						hookList[name][k](req, params);
-					}catch(exp){
+					//}catch(exp){
 
-					}
+					//}
 				}
 			};
 			if(argsList[name]['requestMode'] === 'jsonp'){
@@ -509,36 +523,46 @@ STK.register('kit.io.inter',function($){
 		};
 		that.request = function(name, spec, args){
 			var conf = $.core.json.merge(argsList[name], spec);
+
 			conf.onComplete = function(req, params){
-				try{
-					spec.onComplete(req, params);
-				}catch(exp){
-
-				}
-				if(req['code'] === '100000'){
-					try{
-						spec.onSuccess(req, params);
-					}catch(exp){
-
+				//try{
+					if(spec.onComplete) {
+						spec.onComplete(req, params);
 					}
+					
+				//}catch(exp){
+
+				//}
+				if(req['code'] === '100000'){
+					//try{
+						if(spec.onSuccess) {
+							spec.onSuccess(req, params);
+						}
+						
+					//}catch(exp){
+
+					//}
 				}else{
-					try{
+					//try{
 						if(req['code'] === '100002'){
 							window.location.href=req['data'];
 							return;
 						}
-						spec.onError(req, params);
+						if(spec.onError) {
+							spec.onError(req, params);
+						}
+						
 
-					}catch(exp){
+					//}catch(exp){
 
-					}
+					//}
 				}
 				for(var k in hookList[name]){
-					try{
+					//try{
 						hookList[name][k](req, params);
-					}catch(exp){
+					//}catch(exp){
 
-					}
+					//}
 				}
 			};
 			conf = $.core.obj.cut(conf, ['noqueue']);
@@ -653,6 +677,17 @@ STK.register('common.trans.editIni',function($){
 
 
  
+
+		///查看配置文件路径
+		g('setLocalFileContent',			{'url':'/aj/setLocalFileContent', 'method':'post'});
+		/*
+			/aj/setLocalFileContent?act=add&path=/test.txt&text=xxxxxxxxxxxxxx
+			/aj/setLocalFileContent?act=edit&path=/test.txt&text=xxxxxxxxxxxxxx
+
+			act:		edit | add
+			path: 本地文件路径
+			text: 本地文件内容
+		*/
 		return t;
 });
 /**
@@ -1733,8 +1768,16 @@ STK.register('common.trans.dialog',function($){
 		*/
 		
 
+		///修改本地文件弹层
+		g('getSetLocalFileDialog',			{'url':'/aj/getSetLocalFileDialog', 'method':'get'});
+		/* 
 
- 
+			/aj/getSetLocalFileDialog?path=test.txt
+
+			path :		本地文本路径
+		*/
+
+
 		return t;
 });
 
@@ -2449,6 +2492,185 @@ STK.register('kit.dom.parentElementBy',function($){
 		return null;
 	};
 });
+/**
+ * 本地文件编辑弹层
+ * @id $.common.dialog.getSetLocalFileDialog
+ * @param {Object} node 组件最外节点
+ * @return {Object} 实例
+ * @author gaoyuan3@staff.sina.com.cn
+ * @example
+ * 
+ */
+
+STK.register('common.dialog.getSetLocalFileDialog', function($){
+
+	//+++ 常量定义区 ++++++++++++++++++
+	//-------------------------------------------
+	
+	return function(node){
+		var argsCheck, parseDOM, initPlugins, bindDOM, bindCustEvt, bindListener, destroy, init, that = {};
+
+
+		//+++ 变量定义区 ++++++++++++++++++
+		var _this = {
+			DOM:{},
+			objs:{
+				trans : {
+					dialog : {
+						getSetLocalFileDialog : $.common.trans.dialog.getTrans('getSetLocalFileDialog',{
+							'onSuccess': function (o) {
+								that.getInner().innerHTML = o.data;
+								_this.DOM['setLocalFileForm'] = $.sizzle('[node-type=setLocalFileForm]', that.getInner())[0];
+								$.addEvent(_this.DOM['setLocalFileForm'], 'submit', _this.DOM_eventFun.submitSetLocalFileForm);
+								_this.DOM = $.kit.dom.parseDOM($.builder(that.getInner()).list);
+
+								that.resizeDialog();
+							},
+							'onError': function (o, arg) {
+								that.hide();
+								alert(o.msg);
+								if(o.code == 100001) {
+									if(confirm('是否创建一个本地文件。')) {
+										_this.objs.trans.editIni.setLocalFileContent.request({
+											act : 'add',
+											path : arg.path,
+											text : '{"code":"100000","data":"xxxxxxxxxxxx","msg":"ok"}'
+										});
+									}
+								}
+							},
+							'onFail': function (o) {
+							}
+						})
+					},
+					editIni : {
+						setLocalFileContent : $.common.trans.editIni.getTrans('setLocalFileContent',{
+							'onSuccess': function (o, arg) {
+								if(arg.act === 'add') {
+									that.show(arg);
+								}else{
+									that.hide();
+								}
+							},
+							'onError': function (o) {
+								alert(o.msg);
+							},
+							'onFail': function (o) {
+							}
+						})
+					}
+				}
+			},//组件容器
+			DOM_eventFun: {//DOM事件行为容器
+				submitSetLocalFileForm : function () {
+					var data = $.htmlToJson(_this.DOM['setLocalFileForm']);
+					//data.text && (data.text = data.text.replace(/^[\\\/]*(.+)/, '/$1'));
+					_this.objs.trans.editIni.setLocalFileContent.request(data);
+					$.preventDefault();		
+				}
+			},
+			DEventFun : {		
+				clickCloseDialog : function (oDEvt) {
+					that.hide();
+				}
+			},	
+			//属性方法区
+			show : function (data) {
+				_this.objs.trans.dialog.getSetLocalFileDialog.request(data);
+				_this._show();
+			}
+			
+		};
+		//----------------------------------------------
+
+
+		//+++ 参数的验证方法定义区 ++++++++++++++++++
+		argsCheck = function(){
+			
+		};
+		//-------------------------------------------
+
+
+		//+++ Dom的获取方法定义区 ++++++++++++++++++
+		parseDOM = function(){
+			
+		};
+		//-------------------------------------------
+
+
+		//+++ 模块的初始化方法定义区 ++++++++++++++++++
+		initPlugins = function(){
+			that = $.common.dialog();
+			_this._show = that.show;
+		};
+		//-------------------------------------------
+
+
+		//+++ DOM事件绑定方法定义区 ++++++++++++++++++
+		bindDOM = function(){
+			_this.objs.DEvent = $.core.evt.delegatedEvent(that.getOuter());
+			_this.objs.DEvent.add('closeDialog', 'click', _this.DEventFun.clickCloseDialog);
+			_this.objs.DEvent.add('submitRule', 'click', _this.DEventFun.clickSubmitRule);
+		};
+		//-------------------------------------------
+
+
+		//+++ 自定义事件绑定方法定义区 ++++++++++++++++++
+		bindCustEvt = function(){
+			
+		};
+		//-------------------------------------------
+
+
+		//+++ 广播事件绑定方法定义区 ++++++++++++++++++
+		bindListener = function(){
+			
+		};
+		//-------------------------------------------
+
+
+		//+++ 组件销毁方法的定义区 ++++++++++++++++++
+		destroy = function(){
+			if(_this) {
+				
+				
+				$.foreach(_this.objs, function(o) {
+					if(o.destroy) {
+						o.destroy();
+					}
+				});
+				_this = null;
+			}
+		};
+		//-------------------------------------------
+
+		//+++ 组件的初始化方法定义区 ++++++++++++++++++
+		init = function(){
+			argsCheck();
+			parseDOM();
+			initPlugins();
+			bindDOM();
+			bindCustEvt();
+			bindListener();
+		};
+		//-------------------------------------------
+		//+++ 执行初始化 ++++++++++++++++++
+		init();
+		//-------------------------------------------
+
+
+		//+++ 组件公开属性或方法的赋值区 ++++++++++++++++++
+		that.destroy = destroy;
+		that.show = _this.show;
+		
+		//-------------------------------------------
+
+
+		return that;
+	};
+	
+});
+
 
 
 STK.register('comp.home.exRule', function($){
@@ -2500,6 +2722,14 @@ STK.register('comp.home.exRule', function($){
 					});
 					$.preventDefault();
 				},
+				clickSetLocalFileBtn : function (oDEvt) {
+					if(!_this.objs.getSetLocalFileDialog) {
+						_this.objs.getSetLocalFileDialog = $.common.dialog.getSetLocalFileDialog();
+					}
+					oDEvt.data['path'] = oDEvt.el.innerHTML;
+					_this.objs.getSetLocalFileDialog.show(oDEvt.data);
+					$.preventDefault();
+				},
 				clickDelExRuleBtn : function (oDEvt) {
 					if(confirm('确定删除？')) {
 						oDEvt.data.act = 'del';
@@ -2543,23 +2773,25 @@ STK.register('comp.home.exRule', function($){
 			//属性方法区
 			refreshRule : function (data) {
 				var eRowBox = _this.DOM['row_'+data.id];
-				var eSrcReg = $.sizzle('[node-type=srcReg]', eRowBox)[0];
-				var eTargetReg = $.sizzle('[node-type=targetReg]', eRowBox)[0];
-				var eAbleStatus = $.sizzle('[node-type=ableStatus]', eRowBox)[0];
+				var eTr =  _this.parseHtmlToTrElm(data.html);//debugger;
+				_this.DOM['exRuleTable'].insertBefore(eTr, eRowBox);
+				$.removeNode(eRowBox);
+				_this.DOM = $.kit.dom.parseDOM($.builder(node).list);
+				//var eSrcReg = $.sizzle('[node-type=srcReg]', eRowBox)[0];
+				//var eTargetReg = $.sizzle('[node-type=targetReg]', eRowBox)[0];
+				//var eAbleStatus = $.sizzle('[node-type=ableStatus]', eRowBox)[0];
 
-				if(data['able']) {
-					$.removeClassName(eRowBox, 'disable');
-				}else{
-					$.addClassName(eRowBox, 'disable');
-				}
-				eSrcReg.innerHTML = data['src'];
-				eTargetReg.innerHTML = data['target'];
-				eAbleStatus.checked = data['able'];
+				//if(data['able']) {
+					//$.removeClassName(eRowBox, 'disable');
+				//}else{
+					//$.addClassName(eRowBox, 'disable');
+				//}
+				//eSrcReg.innerHTML = data['src'];
+				//eTargetReg.innerHTML = data['target'];
+				//eAbleStatus.checked = data['able'];
 			},
 			addRule : function (data) {
-				var eDiv = $.C('div');
-				eDiv.innerHTML = '<table><tbody>'+ data.html +'</tbody></table>'; 
-				var eTr =  $.sizzle('tr', eDiv)[0];
+				var eTr =  _this.parseHtmlToTrElm(data.html);
 				_this.DOM['exRuleTable'].appendChild(eTr);
 
 				_this.DOM = $.kit.dom.parseDOM($.builder(node).list);
@@ -2580,6 +2812,12 @@ STK.register('comp.home.exRule', function($){
 					fn(oTr, dom, oData);
 				}
 				
+			},
+			parseHtmlToTrElm : function (sHtml) {
+				var eDiv = $.C('div');
+				eDiv.innerHTML = '<table><tbody>'+ sHtml +'</tbody></table>'; 
+				var eTr =  $.sizzle('tr', eDiv)[0];
+				return eTr;
 			}
 			
 		};
@@ -2623,6 +2861,7 @@ STK.register('comp.home.exRule', function($){
 			_this.objs.DEvent.add('delExRuleBtn', 'click', _this.DEventFun.clickDelExRuleBtn);
 			_this.objs.DEvent.add('addExRuleBtn', 'click', _this.DEventFun.clickAddExRuleBtn);
 			_this.objs.DEvent.add('switchExRuleBtn', 'click', _this.DEventFun.clickSwitchExRuleBt);
+			_this.objs.DEvent.add('setLocalFileBtn', 'click', _this.DEventFun.clickSetLocalFileBtn);
 
 		};
 		//-------------------------------------------
@@ -2865,7 +3104,6 @@ STK.register('common.dialog.getSetSettingRuleDialog', function($){
 		bindDOM = function(){
 			_this.objs.DEvent = $.core.evt.delegatedEvent(that.getOuter());
 			_this.objs.DEvent.add('closeDialog', 'click', _this.DEventFun.clickCloseDialog);
-			_this.objs.DEvent.add('submitRule', 'click', _this.DEventFun.clickSubmitRule);
 			
 		};
 		//-------------------------------------------
@@ -2970,6 +3208,14 @@ STK.register('common.settingRuleList', function($){
 
 			},
 			DEventFun : {
+				clickSetLocalFileBtn : function (oDEvt) {
+					if(!_this.objs.getSetLocalFileDialog) {
+						_this.objs.getSetLocalFileDialog = $.common.dialog.getSetLocalFileDialog();
+					}
+					oDEvt.data['path'] = oDEvt.el.innerHTML;
+					_this.objs.getSetLocalFileDialog.show(oDEvt.data);
+					$.preventDefault();
+				},
 				clickDelSettingRuleBtn : function (oDEvt) {
 					if(confirm('确定要删除此条配置')) {
 						var actIsOk = _this.actWithTrInfo(oDEvt.el, oDEvt.data, function (oTr, dom, oData) {
@@ -3028,8 +3274,7 @@ STK.register('common.settingRuleList', function($){
 			listenerFun : {
 				settingRuleEdit : function (data) {
 					var sRowNodeType = 'row_' + data.src_context + '_' + data.src_type + '_' + data.src_id;
-					var eRow = $.sizzle('[node-type='+sRowNodeType+']', _this.DOM['settingRuleTable']);
-					eRow = eRow && eRow[0];
+					var eRow = _this.DOM[sRowNodeType];
 					if(eRow) {
 						if(data.currentSetting[data.type] === data.context) {
 							_this.refreshSetttingRule(eRow, data);
@@ -3048,22 +3293,26 @@ STK.register('common.settingRuleList', function($){
 			},
 			//属性方法区
 			refreshSetttingRule : function (eRow, data) {
-				var sNewRowNodeType = 'row_' + data.context + '_' + data.type + '_' + data.id;
-				eRow.setAttribute('node-type', sNewRowNodeType);
-				var dom = $.kit.dom.parseDOM($.builder(eRow).list);
-				var oInfo = $.queryToJson(eRow.getAttribute('info'));
-				oInfo.id = data.id;
-				dom['context'].innerHTML = data.context;
-				dom['type'].innerHTML = data.type;
-				dom['srcReg'].innerHTML = data.src;
-				dom['targetReg'].innerHTML= data.target;
-				dom['able'].checked = data.able;
-				if(data['able']) {
-					$.removeClassName(eRow, 'disable');
-				}else{
-					$.addClassName(eRow, 'disable');
-				}
-				eRow.setAttribute('info',$.jsonToQuery(oInfo));
+				var eNewRow = _this.parseHtmlToTrElm(data.html);
+				_this.DOM['settingRuleTable'].insertBefore(eNewRow, eRow);
+				$.removeNode(eRow);
+				_this.DOM = $.kit.dom.parseDOM($.builder(node).list);
+				//var sNewRowNodeType = 'row_' + data.context + '_' + data.type + '_' + data.id;
+				//eRow.setAttribute('node-type', sNewRowNodeType);
+				//var dom = $.kit.dom.parseDOM($.builder(eRow).list);
+				//var oInfo = $.queryToJson(eRow.getAttribute('info'));
+				//oInfo.id = data.id;
+				//dom['context'].innerHTML = data.context;
+				//dom['type'].innerHTML = data.type;
+				//dom['srcReg'].innerHTML = data.src;
+				//dom['targetReg'].innerHTML= data.target;
+				//dom['able'].checked = data.able;
+				//if(data['able']) {
+					//$.removeClassName(eRow, 'disable');
+				//}else{
+					//$.addClassName(eRow, 'disable');
+				//}
+				//eRow.setAttribute('info',$.jsonToQuery(oInfo));
 			},
 			removeRow : function (eRow) {
 				$.removeNode(eRow);
@@ -3097,13 +3346,18 @@ STK.register('common.settingRuleList', function($){
 				_this.objs.getSetSettingRuleDialog.show(data);
 			},
 			addSettingRule : function (data) {
-				var eDiv = $.C('div');
-				eDiv.innerHTML = '<table><tbody>'+ data.html +'</tbody></table>';
-				var eTr =  $.sizzle('tr', eDiv)[0];
+				var eTr =  _this.parseHtmlToTrElm(data.html);
 				_this.DOM['settingRuleTable'].appendChild(eTr);
 
 				_this.DOM = $.kit.dom.parseDOM($.builder(node).list);
+			},
+			parseHtmlToTrElm : function (sHtml) {
+				var eDiv = $.C('div');
+				eDiv.innerHTML = '<table><tbody>'+ sHtml +'</tbody></table>'; 
+				var eTr =  $.sizzle('tr', eDiv)[0];
+				return eTr;
 			}
+			
 		};
 		//----------------------------------------------
 
@@ -3145,6 +3399,7 @@ STK.register('common.settingRuleList', function($){
 			_this.objs.DEvent.add('editSettingRuleBtn', 'click', _this.DEventFun.clickEditSettingRuleBtn);
 			_this.objs.DEvent.add('switchAbleBtn', 'click', _this.DEventFun.clickSwitchAbleBtn);
 			_this.objs.DEvent.add('delSettingRuleBtn', 'click', _this.DEventFun.clickDelSettingRuleBtn);
+			_this.objs.DEvent.add('setLocalFileBtn', 'click', _this.DEventFun.clickSetLocalFileBtn);
 		};
 		//-------------------------------------------
 

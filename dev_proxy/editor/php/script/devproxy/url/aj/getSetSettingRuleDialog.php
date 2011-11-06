@@ -12,10 +12,11 @@ $requery = array(
 	'id' => getPost('id'),
 	'src' => getPost('src'),
 	'target' => getPost('target'),
-	'able' => getPost('able'),
+	'able' => fixBoolean(getPost('able')),
 	'src_context' => getPost('src_context'),
 	'context' => getPost('context'),
 	'src_type' => getPost('src_type'),
+	'beFile' => fixBoolean(getPost('beFile')),
 	'type' => getPost('type')
 );
 
@@ -40,7 +41,8 @@ function flow_add() {
 		'act' => 'add',
 		'src_context' => $requery['src_context'],
 		'src_type' => $requery['src_type'],
-		'able' => fixBoolean($requery['able']),
+		'able' => $requery['able'],
+		'isLocalFile' => $requery['beFile'],
 	);
 	$tpl = new Page($data);
 	$trans->response('100000', $tpl->fetch('lump/settingDialog.tpl'), 'ok');
@@ -61,6 +63,7 @@ function flow_edit() {
 			'src_context' => $requery['src_context'],
 			'src_type' => $requery['src_type'],
 			'able' => $u['able'],
+			'isLocalFile' => $u['isLocalFile'],
 			'act' => $requery['act'],
 			'id' => $requery['id']
 		);

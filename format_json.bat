@@ -1,0 +1,1 @@
+python E:\ggg_toy\install_rar\dev_proxy.py -j E:\ggg_toy\install_rar\devproxy.ini

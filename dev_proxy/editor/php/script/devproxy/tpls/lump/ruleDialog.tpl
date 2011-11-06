@@ -18,12 +18,17 @@
 		</div>
 		<div class="dialogU">
 			<label class="dialogT" for="urlTo">转向到:</label>
-			<span class="dialogB"><textarea id="urlTo" name="target" class="ruleInput">{% $target %}</textarea></span>
+			<span class="dialogB">
+				<label for="befile" class="isLocalFile"><input type="checkbox" id="befile" name="befile"{% if $isLocalFile %}checked="checked"{% else %}{% /if %} value="true" />转向的是本地路径</label><br />
+				<textarea id="urlTo" name="target" class="ruleInput">{% $target %}</textarea>
+			</span>
 		</div>
 	 {% if $hasAble %}
 		<div class="dialogU">
 			<span class="dialogT">&nbsp;</span>
-			<span class="dialogB"><label for="able"><input type="checkbox" id="able" name="able"{% if $able %}checked="checked"{% else %}{% /if %} value="true" />启用</label></span>
+			<span class="dialogB enableRule">
+				<label for="able" class="enableRule"><input type="checkbox" id="able" name="able"{% if $able %}checked="checked"{% else %}{% /if %} value="true" />启用</label>
+			</span>
 		</div>
 	 {% /if %}
 	</div>

@@ -15,7 +15,6 @@ $data = array(
 	'iniPath' => $iniPathApiMsg['data'],
 );
 
-
 $tpl = new Page($data);
 
 $tpl->display('page/home.tpl');

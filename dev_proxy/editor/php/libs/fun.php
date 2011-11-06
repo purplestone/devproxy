@@ -43,9 +43,11 @@ function flowByKey($key, $value, $flowList) {
 	if($value && in_array($value, $flowList)) {
 		$fun = 'flow_'.$value;
 		$fun();
+		$r = null;
 	}else{
-		return $key . ' 参数 必须为 ' . join(' | ', $flowList);
+		$r = $key . ' 参数 必须为 ' . join(' | ', $flowList);
 	}
+	return $r;
 }
 
 
@@ -83,6 +85,13 @@ function fixBoolean($b) {
 	return $b;
 }
 
+function delPathFirstSlashes($path) {
+	return preg_replace('/[\\\\\\/]*(.+)/', '$1', $path);
+}
+
+function addPathRootSlashes($path) {
+	return preg_replace('/[\\\\\\/]*(.+)/', '/$1', $path);
+}
 
 
 ?>
