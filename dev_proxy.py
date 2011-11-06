@@ -445,14 +445,13 @@ def warp_url(sUrl):
 
     for tUrl in proxy_ini:
         rUrl = re.compile('(?:http://|https://)'+tUrl[0])
-        sReUrl = 'http://'+tUrl[1].replace('$', '\\')
         if rUrl.match(sUrl):
-            sUrl = rUrl.sub(sReUrl,sUrl)
-            #sUrl = '\devproxy.ini'
             if tUrl[2]:
                 sCDir = gpy.cur_file_dir()
-                r = re.compile(r'^http://')
-                sUrl = sCDir + '/devproxy_temp_file' + r.sub('', sUrl)
+                sUrl = sCDir + '/devproxy_temp_file' + tUrl[1]
+            else:
+                sReUrl = 'http://'+tUrl[1].replace('$', '\\')
+                sUrl = rUrl.sub(sReUrl,sUrl)
             oUrl = Url(sUrl)
             oUrl.isLocalFile = tUrl[2]
             break
@@ -496,16 +495,22 @@ def getIni(logger):
         for table in currentSettingTableList:
             currentSettingRuleList += table
         currentSettingRuleList = filter(lambda u:u[3], currentSettingRuleList)
-        gpy.var_dump(currentSettingRuleList)
+        #gpy.var_dump(currentSettingRuleList)
         currentSettingRuleList = [[u[1], u[2], u[4]] for u in currentSettingRuleList]
 
         allRule= currentSettingRuleList + exRuleList
     
 
     oIniFile.close()
+    sCDir = gpy.cur_file_dir()
     for u in allRule:
+        if u[2]:
+            sDir = sCDir + '/devproxy_temp_file' + u[1]
+        else:
+            sDir = ''
         #print(u[0] + '               ' + u[1])
-        printLog(logger, u[0] + '               ' + u[1])
+        printLog(logger, u[0] + '               ' + sDir + u[1])
+        print
 
     print
     #print('++++++++++++++++++++++++++++++++++++++++++')
