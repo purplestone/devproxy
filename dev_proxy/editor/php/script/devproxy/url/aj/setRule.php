@@ -42,28 +42,22 @@ function flow_add() {
 	$apiMsg = $iniData->addRule($requery['table'], $requery['src'], $requery['target'], $requery['able'], $requery['befile']);
 
 	if($apiMsg['code'] === '100000') {
-		$data = array(
+		$apiMsg['data'] =array_merge( array(
 			'src' => $requery['src'],
 			'act' => 'add',
-			'target' => $requery['target'],
 			'able' => $requery['able'],
 			'isLocalFile' => $requery['befile'],
-			'table' => $requery['table']
-		);
-
+			'table' => $requery['table'],
+		), $apiMsg['data']);
+		if(!isset($apiMsg['data']['target'])) {
+			$apiMsg['data']['target'] = $requery['target'];
+		}
 		$tpl = new Page(array(
-			'exRuleRow' => array(
-				'id' => $apiMsg['data']['id'],
-				'src' => $requery['src'],
-				'target' => $requery['target'],
-				'able' => $requery['able'],
-				'isLocalFile' => $requery['befile'],
-			)	
+			'exRuleRow' => $apiMsg['data']
 		));
 
-		$data['html'] = $tpl->fetch('lump/exRuleRow.tpl');
+		$apiMsg['data']['html'] = $tpl->fetch('lump/exRuleRow.tpl');
 
-		$apiMsg['data'] = array_merge($apiMsg['data'], $data);
 		
 	}
 
@@ -79,17 +73,19 @@ function flow_edit() {
 		$apiMsg = $iniData->switchRule($requery['table'], $requery['id'], $requery['able']);
 	}else{
 		$apiMsg = $iniData->setRule($requery['table'], $requery['id'], $requery['src'], $requery['target'], $requery['able'], $requery['befile']);
-		$apiMsg['data'] = array(
+		$apiMsg['data'] = array_merge($apiMsg['data'], array(
 			'src' => $requery['src'],
 			'act' => 'edit',
-			'target' => $requery['target'],
 			'able' => $requery['able'],
 			'isLocalFile' => $requery['befile'],
 			'id' => $requery['id'],
-		);
+		));
+		if(!isset($apiMsg['data']['target'])) {
+			$apiMsg['data']['target'] = $requery['target'];
+		}
 		if($apiMsg['code'] == 100000) {
 			$tpl = new Page(array(
-				'exRuleRow' => $apiMsg['data']	
+				'exRuleRow' => $apiMsg['data']
 			));
 			$apiMsg['data']['html'] = $tpl->fetch('lump/exRuleRow.tpl');
 		}

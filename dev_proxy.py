@@ -133,7 +133,7 @@ class ProxyHandler (BaseHTTPServer.BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(sHttpBody)
             except :
-                sHttpBody = 'devpoxy error: Not Found File: ' + warp_path.__str__()
+                sHttpBody = 'devpoxy error( Not Found File: ' + warp_path.__str__() +' )'
                 self.send_error(404, sHttpBody)
 
 
@@ -262,7 +262,7 @@ def logSetup (filename, log_size, daemon):
 
 def usage (msg=None):
     if msg: print msg
-    print sys.argv[0], "[-p port] [-l logfile] [-dh] [allowed_client_name ...]]"
+    print sys.argv[0], "[-p port] [-l logfile] [-dh] [-j jsonfile] [allowed_client_name ...]]"
     print
     print "   -p       - Port to bind to"
     print "   -i       - Set .ini file path"
@@ -359,7 +359,7 @@ def main ():
     if sExIniPath:
         sIniPath = sExIniPath
     else:
-        sCDir = gpy.cur_file_dir()
+        sCDir = os.getcwd()
         if sCDir:
             sCDir = sCDir + '/'
         sIniPath = sCDir + 'url_warp.ini'
@@ -447,7 +447,8 @@ def warp_url(sUrl):
         rUrl = re.compile('(?:http://|https://)'+tUrl[0])
         if rUrl.match(sUrl):
             if tUrl[2]:
-                sCDir = gpy.cur_file_dir()
+                sCDir = os.getcwd()
+                #print(sCDir)
                 sUrl = sCDir + '/devproxy_temp_file' + tUrl[1]
             else:
                 sReUrl = 'http://'+tUrl[1].replace('$', '\\')
@@ -498,14 +499,13 @@ def getIni(logger):
         #gpy.var_dump(currentSettingRuleList)
         currentSettingRuleList = [[u[1], u[2], u[4]] for u in currentSettingRuleList]
 
-        allRule= currentSettingRuleList + exRuleList
+        allRule= exRuleList + currentSettingRuleList
     
 
     oIniFile.close()
-    sCDir = gpy.cur_file_dir()
     for u in allRule:
         if u[2]:
-            sDir = sCDir + '/devproxy_temp_file' + u[1]
+            sDir = os.getcwd() + '/devproxy_temp_file' + u[1]
         else:
             sDir = ''
         #print(u[0] + '               ' + u[1])

@@ -271,11 +271,17 @@ class iniData {
 				$apiMsg = createApiMsg('100001', null, '要查询的表'.$table.'不存在');
 		}
 
+		if($isLocalFile) {
+			$target = preg_replace('/^[\\\\\\\\\\/]*(.+)/', '/$1', $target);
+		}
 		if(!isset($apiMsg)) {
 			$data->counter++;
 			$data->table[] = array($data->counter, $src, $target, !!$able, !!$isLocalFile);
 
-			$apiMsg = createApiMsg('100000', array('id' => $data->counter), 'ok');
+			$apiMsg = createApiMsg('100000', array(
+				'id' => $data->counter,
+				'target' => $target,
+			), 'ok');
 			$this->saveIni();
 		}
 
@@ -378,6 +384,9 @@ class iniData {
 				$apiMsg = createApiMsg('100001', null, '要查询的表'.$table.'不存在');
 		}
 
+		if($isLocalFile) {
+			$target = preg_replace('/^[\\\\\\\\\\/]*(.+)/', '/$1', $target);
+		}
 		if(!isset($apiMsg)) {
 			$u = &getRowById($data, $id);
 
@@ -386,7 +395,7 @@ class iniData {
 				$u[2] = $target;
 				$u[3] = $able;
 				$u[4] = $isLocalFile;
-				$apiMsg = createApiMsg('100000', null, 'ok');
+				$apiMsg = createApiMsg('100000', array('target' => $target), 'ok');
 				$this->saveIni();
 			}else{
 				$apiMsg = createApiMsg('100001', null, '在'.$table.'中没有查询到id为'.$id.'的条目');
@@ -463,6 +472,9 @@ class iniData {
 			$apiMsg = $this->checkContextInput($context);
 		}
 
+		if($isLocalFile) {
+			$target = preg_replace('/^[\\\\\\\\\\/]*(.+)/', '/$1', $target);
+		}
 		if(!$apiMsg) {
 
 			$table = &$this->oIni->condition->$context->setting->$type;
@@ -572,6 +584,9 @@ class iniData {
 			$apiMsg = $this->checkContextInput($context);
 		}
 
+		if($isLocalFile) {
+			$target = preg_replace('/^[\\\\\\\\\\/]*(.+)/', '/$1', $target);
+		}
 		if(!$apiMsg) {
 			$src_table = &$this->oIni->condition->$src_context->setting->$src_type->table;
 
@@ -583,7 +598,10 @@ class iniData {
 					$u['3'] = $able;
 					$u['4'] = $isLocalFile;
 					$this->saveIni();
-					$apiMsg = createApiMsg('100000', null, 'ok');
+					$apiMsg = createApiMsg('100000', array(
+						'target' => $target,
+						'id' => $id,
+					), 'ok');
 				}else{
 					global $debugger;
 					if($debugger) {

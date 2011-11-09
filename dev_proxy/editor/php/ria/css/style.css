@@ -32,7 +32,7 @@ a.localFile:link, a.localFile:visited, a.localFile:hover, a.localFile:active {co
 .isLocalFile {line-height:2em;}
 .enableRule {float:right;}
 .dialogF {padding:1em 0;clear:both;text-align:right;}
-.cmdInput {width:550px;height:250px;}
+.cmdInput {width:700px;height:250px;font-size:12px;}
 .ruleInput {width:550px;height:70px;}
 .dialogInput {font-size:14px;}
 

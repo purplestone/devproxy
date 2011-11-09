@@ -46,30 +46,36 @@ function flow_add() {
 	$apiMsg = $iniData->addSettingRule($requery['context'], $requery['type'], $requery['src'], $requery['target'], $requery['able'], $requery['befile']);
 
 	if($apiMsg['code'] === '100000') {
-		$data = array(
+		//$data = array(
+			//'act' => 'add',
+			//'src' => $requery['src'],
+			//'target' => $requery['target'],
+			//'able' => $requery['able'],
+			//'isLocalFile' => $requery['befile'],
+			//'context' => $requery['context'],
+			//'type' => $requery['type'],
+		//);
+
+		$apiMsg['data'] = array_merge($apiMsg['data'], array(
 			'act' => 'add',
+			'id' => $apiMsg['data']['id'],
 			'src' => $requery['src'],
-			'target' => $requery['target'],
 			'able' => $requery['able'],
 			'isLocalFile' => $requery['befile'],
-			'context' => $requery['context'],
 			'type' => $requery['type'],
-		);
-
-		$tpl = new Page(array(
-			'settingRow' => array(
-				'id' => $apiMsg['data']['id'],
-				'src' => $requery['src'],
-				'target' => $requery['target'],
-				'able' => $requery['able'],
-				'isLocalFile' => $requery['befile'],
-				'type' => $requery['type'],
-				'context' => $requery['context'],
-			)	
+			'context' => $requery['context'],
 		));
-		$data['html'] = $tpl->fetch('lump/settingRuleRow.tpl');
-		//echo $data['html'];
-		$apiMsg['data'] = array_merge($apiMsg['data'], $data);
+		if(!isset($apiMsg['data']['target'])) {
+			$apiMsg['data']['target'] = $requery['target'];
+		}
+		$data = array(
+			'settingRow' => $apiMsg['data']
+		);
+		//var_dump($data);
+
+		$tpl = new Page($data);
+		$apiMsg['data']['html'] = $tpl->fetch('lump/settingRuleRow.tpl');
+
 
 	}
 
@@ -102,7 +108,6 @@ function flow_edit() {
 	$apiMsg['data'] = array_merge($apiMsg['data'], array(
 		'src' => $requery['src'],
 		'act' => 'edit',
-		'target' => $requery['target'],
 		'able' => $requery['able'],
 		'context' => $requery['context'],
 		'type' => $requery['type'],
@@ -112,9 +117,14 @@ function flow_edit() {
 		'src_type' => $requery['src_type'],
 		'currentSetting' => $iniData->getCurrentSetting(),
 	));
-	$tpl = new Page(array(
+	if(!isset($apiMsg['data']['target'])) {
+		$apiMsg['data']['target'] = $requery['target'];
+	}
+	$data = array(
 		'settingRow' => $apiMsg['data'],
-	));
+	);
+	//var_dump($data);
+	$tpl = new Page($data);
 	$apiMsg['data']['html'] = $tpl->fetch('lump/settingRuleRow.tpl');
 	$trans->response($apiMsg);
 }

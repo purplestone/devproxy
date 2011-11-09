@@ -1,6 +1,6 @@
 
 /*
-runTime: 0.0387
+runTime: 0.0260
 fileTree:
  +---- conf/all.js
  |  +---- pl/home/iniInfo.js
@@ -2563,7 +2563,7 @@ STK.register('common.dialog.getSetLocalFileDialog', function($){
 					var data = $.htmlToJson(_this.DOM['setLocalFileForm']);
 					//data.text && (data.text = data.text.replace(/^[\\\/]*(.+)/, '/$1'));
 					_this.objs.trans.editIni.setLocalFileContent.request(data);
-					$.preventDefault();		
+					$.preventDefault();
 				}
 			},
 			DEventFun : {		
@@ -3273,13 +3273,11 @@ STK.register('common.settingRuleList', function($){
 					var sRowNodeType = 'row_' + data.src_context + '_' + data.src_type + '_' + data.src_id;
 					var eRow = _this.DOM[sRowNodeType];
 					if(eRow) {
-						if(data.currentSetting[data.type] === data.context) {
+						if(data.currentSetting[data.type] === data.context || !spec.ifDisableToRemove) {
 							_this.refreshSetttingRule(eRow, data);
 							//alert('refreshSetttingRule');
 						}else{
-							if(spec.ifDisableToRemove) {
-								_this.removeRow(eRow);
-							}
+							_this.removeRow(eRow);
 							//alert('removeRow');
 						}
 					}
@@ -3294,22 +3292,6 @@ STK.register('common.settingRuleList', function($){
 				_this.DOM['settingRuleTable'].insertBefore(eNewRow, eRow);
 				$.removeNode(eRow);
 				_this.DOM = $.kit.dom.parseDOM($.builder(node).list);
-				//var sNewRowNodeType = 'row_' + data.context + '_' + data.type + '_' + data.id;
-				//eRow.setAttribute('node-type', sNewRowNodeType);
-				//var dom = $.kit.dom.parseDOM($.builder(eRow).list);
-				//var oInfo = $.queryToJson(eRow.getAttribute('info'));
-				//oInfo.id = data.id;
-				//dom['context'].innerHTML = data.context;
-				//dom['type'].innerHTML = data.type;
-				//dom['srcReg'].innerHTML = data.src;
-				//dom['targetReg'].innerHTML= data.target;
-				//dom['able'].checked = data.able;
-				//if(data['able']) {
-					//$.removeClassName(eRow, 'disable');
-				//}else{
-					//$.addClassName(eRow, 'disable');
-				//}
-				//eRow.setAttribute('info',$.jsonToQuery(oInfo));
 			},
 			removeRow : function (eRow) {
 				$.removeNode(eRow);
