@@ -2281,24 +2281,33 @@ STK.register('common.dialog.setRuleDialog', function($){
 						getSetRuleDialog : $.common.trans.dialog.getTrans('getSetRuleDialog',{
 							'onSuccess': function (o) {
 								//alert(o.data);
-								that.getInner().innerHTML = o.data;//alert(o.data);
-								_this.DOM['setRuleDialogForm'] = $.sizzle('[node-type=setRuleDialogForm]', that.getInner())[0];
+								that.getInner().innerHTML = o.data.html;//alert(o.data);
+								//debugger;
+								_this.DOM = $.kit.dom.parseDOM($.builder(that.getInner()).list);
+								//_this.DOM['setRuleDialogForm'] = $.sizzle('[node-type=setRuleDialogForm]', that.getInner())[0];
+								_this.checkHost();
 								$.addEvent(_this.DOM['setRuleDialogForm'], 'submit', _this.DOM_eventFun.submitRuleDialogForm);
+								$.addEvent(_this.DOM['srcHost'], 'change', _this.DOM_eventFun.changeHostType);
+								$.addEvent(_this.DOM['targetHost'], 'change', _this.DOM_eventFun.changeHostType);
+								$.addEvent(_this.DOM['customHost'], 'change', _this.DOM_eventFun.changeHostType);
+								var iSI = setInterval(function() {try{
+									_this.checkHost();
+								}catch(e) {alert(e);clearInterval(iSI);}},1000);
 								//$.addEvent(_this.DOM['setRuleDialogForm'], 'click', function () {
 									//alert(11);
 								//});
 
 								//$.addEvent(_this.DOM['setRuleDialogForm'], 'submit', _this.DOM_eventFun.submitSetRuleDialogForm);
 								that.resizeDialog();
-								//console.log('trans.setRuleDialogForm onSuccess');
+								//console.log('trans.getSetRuleDialog onSuccess');
 							},
 							'onError': function (o) {
 								alert(o.msg);
 								//location.reload();
-								//console.log('trans.setRuleDialogForm onError');
+								//console.log('trans.getSetRuleDialog onError');
 							},
 							'onFail': function (o) {
-								//console.log('trans.setRuleDialogForm onFail');
+								//console.log('trans.getSetRuleDialog onFail');
 							}
 						})
 					},
@@ -2328,6 +2337,9 @@ STK.register('common.dialog.setRuleDialog', function($){
 					data.target && (data.target = data.target.replace(/^http:\/\/(.+)/, '$1'));
 					_this.objs.trans.editIni.setRule.request(data);
 					$.preventDefault();
+				},
+				changeHostType : function (oEvt) {
+					_this.checkHost();
 				}
 			},
 			DEventFun : {
@@ -2340,6 +2352,45 @@ STK.register('common.dialog.setRuleDialog', function($){
 				}
 			},
 			//属性方法区
+			checkHost : function () {
+				var hostType = _this.getRadioValueByName(_this.DOM['setRuleDialogForm'], 'theHostType');
+				//console.log(hostType);
+				var sHost = '';
+				switch(hostType) {
+					default:
+					case 'src':
+						sHost = _this.DOM['srcUrl'].value;
+						_this.DOM['hostValue'].readOnly = true;
+						break;
+					case 'target':
+						sHost = _this.DOM['urlTo'].value;
+						_this.DOM['hostValue'].readOnly = true;
+						break;
+					case 'custom':
+						//sHost = _this.DOM['hostValue'].value;
+						_this.DOM['hostValue'].readOnly = false;
+						return;
+						break;
+				}
+				sHost = _this.getHostFormUrl(sHost);
+				_this.DOM['hostValue'].value = sHost;
+				//console.log(sHost);
+			},
+			getHostFormUrl : function (sUrl) {
+				var aMatchUrl = sUrl.match(/^(\w+\:\/\/)*([\w\d-_\.]+)/);
+				var sHost = (aMatchUrl && aMatchUrl[2]) || '';
+				return sHost;
+			},
+			getRadioValueByName : function (eForm, sName) {
+				var aRadio = $.sizzle('[name='+sName+']', eForm);
+				var sValue = '';
+				$.foreach(aRadio, function(eRadio) {
+					if(eRadio.checked) {
+						sValue = eRadio.value;
+					}
+				});
+				return sValue;
+			},
 			show : function (data) {
 				if(data.src) {
 					data.src = decodeURIComponent(data.src);
@@ -3001,20 +3052,27 @@ STK.register('common.dialog.getSetSettingRuleDialog', function($){
 						getSetSettingRuleDialog : $.common.trans.dialog.getTrans('getSetSettingRuleDialog',{
 							'onSuccess': function (o) {
 								//alert(o.data);
-								that.getInner().innerHTML = o.data;
-								_this.DOM['getSettingDialogForm'] = $.sizzle('[node-type=getSettingDialogForm]', that.getInner())[0];
-								$.addEvent(_this.DOM['getSettingDialogForm'], 'submit', _this.DOM_eventFun.submitGetSettingDialogForm);
+								that.getInner().innerHTML = o.data.html;
 								_this.DOM = $.kit.dom.parseDOM($.builder(that.getInner()).list);
+								//_this.DOM['getSettingDialogForm'] = $.sizzle('[node-type=getSettingDialogForm]', that.getInner())[0];
+								_this.checkHost();
+								$.addEvent(_this.DOM['getSettingDialogForm'], 'submit', _this.DOM_eventFun.submitGetSettingDialogForm);
+								$.addEvent(_this.DOM['srcHost'], 'change', _this.DOM_eventFun.changeHostType);
+								$.addEvent(_this.DOM['targetHost'], 'change', _this.DOM_eventFun.changeHostType);
+								$.addEvent(_this.DOM['customHost'], 'change', _this.DOM_eventFun.changeHostType);
+								var iSI = setInterval(function() {try{
+									_this.checkHost();
+								}catch(e) {alert(e);clearInterval(iSI);}},1000);
 
 								that.resizeDialog();
-								//console.log('trans.setRuleDialogForm onSuccess');
+								//console.log('trans.getSetSettingRuleDialog onSuccess');
 							},
 							'onError': function (o) {
 								alert(o.msg);
-								//console.log('trans.setRuleDialogForm onError');
+								//console.log('trans.getSetSettingRuleDialog onError');
 							},
 							'onFail': function (o) {
-								//console.log('trans.setRuleDialogForm onFail');
+								//console.log('trans.getSetSettingRuleDialog onFail');
 							}
 						})
 					},
@@ -3055,6 +3113,9 @@ STK.register('common.dialog.getSetSettingRuleDialog', function($){
 					data.target && (data.target = data.target.replace(/^http:\/\/(.+)/, '$1'));
 					_this.objs.trans.editIni.setSettingRule.request(data);
 					$.preventDefault();		
+				},
+				changeHostType : function (oEvt) {
+					_this.checkHost();
 				}
 			},
 			DEventFun : {		
@@ -3063,6 +3124,45 @@ STK.register('common.dialog.getSetSettingRuleDialog', function($){
 				}
 			},	
 			//属性方法区
+			checkHost : function () {
+				var hostType = _this.getRadioValueByName(_this.DOM['setRuleDialogForm'], 'theHostType');
+				//console.log(hostType);
+				var sHost = '';
+				switch(hostType) {
+					default:
+					case 'src':
+						sHost = _this.DOM['srcUrl'].value;
+						_this.DOM['hostValue'].readOnly = true;
+						break;
+					case 'target':
+						sHost = _this.DOM['urlTo'].value;
+						_this.DOM['hostValue'].readOnly = true;
+						break;
+					case 'custom':
+						//sHost = _this.DOM['hostValue'].value;
+						_this.DOM['hostValue'].readOnly = false;
+						return;
+						break;
+				}
+				sHost = _this.getHostFormUrl(sHost);
+				_this.DOM['hostValue'].value = sHost;
+				//console.log(sHost);
+			},
+			getHostFormUrl : function (sUrl) {
+				var aMatchUrl = sUrl.match(/^(\w+\:\/\/)*([\w\d-_\.]+)/);
+				var sHost = (aMatchUrl && aMatchUrl[2]) || '';
+				return sHost;
+			},
+			getRadioValueByName : function (eForm, sName) {
+				var aRadio = $.sizzle('[name='+sName+']', eForm);
+				var sValue = '';
+				$.foreach(aRadio, function(eRadio) {
+					if(eRadio.checked) {
+						sValue = eRadio.value;
+					}
+				});
+				return sValue;
+			},
 			show : function (data) {
 				_this.objs.trans.dialog.getSetSettingRuleDialog.request(data);
 				_this._show();

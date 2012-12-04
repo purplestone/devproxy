@@ -4,7 +4,6 @@ require_once($_SERVER['DOCUMENT_ROOT'] . '/php/script/devproxy/api/iniData.php')
 require_once($_SERVER['DOCUMENT_ROOT'] . '/php/script/devproxy/lib/Page.php');
 require_once($_SERVER['DOCUMENT_ROOT'] . '/php/script/devproxy/lib/Trans.php');
 
-
 $trans = new Trans();
 
 $requery = array(
@@ -15,6 +14,9 @@ $requery = array(
 	'target' => getPost('target'),
 	'able' => fixBoolean(getPost('able')),
 	'befile' => fixBoolean(getPost('befile')),
+	'https' => fixBoolean(getPost('behttps')),
+	'host' => getPost('host'),
+	'hostType' => getPost('theHostType'),
 );
 
 if(!$requery['act']) {
@@ -39,7 +41,7 @@ function flow_add() {
 
 	$iniData = new iniData();
 
-	$apiMsg = $iniData->addRule($requery['table'], $requery['src'], $requery['target'], $requery['able'], $requery['befile']);
+	$apiMsg = $iniData->addRule($requery['table'], $requery['src'], $requery['target'], $requery['able'], $requery['befile'], $requery['https'], $requery['host'], $requery['hostType']);
 
 	if($apiMsg['code'] === '100000') {
 		$apiMsg['data'] =array_merge( array(
@@ -48,6 +50,9 @@ function flow_add() {
 			'able' => $requery['able'],
 			'isLocalFile' => $requery['befile'],
 			'table' => $requery['table'],
+			'https' => $requery['https'],
+			'host' => $requery['host'],
+			'hostType' => $requery['hostType'],
 		), $apiMsg['data']);
 		if(!isset($apiMsg['data']['target'])) {
 			$apiMsg['data']['target'] = $requery['target'];
@@ -72,22 +77,27 @@ function flow_edit() {
 	if($requery['src'] === null || $requery['target'] === null) {
 		$apiMsg = $iniData->switchRule($requery['table'], $requery['id'], $requery['able']);
 	}else{
-		$apiMsg = $iniData->setRule($requery['table'], $requery['id'], $requery['src'], $requery['target'], $requery['able'], $requery['befile']);
+		$apiMsg = $iniData->setRule($requery['table'], $requery['id'], $requery['src'], $requery['target'], $requery['able'], $requery['befile'], $requery['https'], $requery['host'], $requery['hostType']);
 		$apiMsg['data'] = array_merge($apiMsg['data'], array(
 			'src' => $requery['src'],
 			'act' => 'edit',
 			'able' => $requery['able'],
 			'isLocalFile' => $requery['befile'],
 			'id' => $requery['id'],
+			'https' => $requery['https'],
+			'host' => $requery['host'],
+			'hostType' => $requery['hostType'],
 		));
 		if(!isset($apiMsg['data']['target'])) {
 			$apiMsg['data']['target'] = $requery['target'];
 		}
 		if($apiMsg['code'] == 100000) {
-			$tpl = new Page(array(
+			$htmlVar = array(
 				'exRuleRow' => $apiMsg['data']
-			));
+			);
+			$tpl = new Page($htmlVar);
 			$apiMsg['data']['html'] = $tpl->fetch('lump/exRuleRow.tpl');
+			$apiMsg['data']['htmlVar'] = $htmlVar;
 		}
 	}
 

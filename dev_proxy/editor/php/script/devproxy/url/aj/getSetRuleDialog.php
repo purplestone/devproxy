@@ -60,7 +60,7 @@ function flow_edit() {
 	if($u['code'] == '100000') {
 
 		$u = $u['data'];
-		$data = array(
+		$data = array_merge($u, array(
 			'src' => $u['src'],
 			'target' => $u['target'],
 			'able' => fixBoolean($u['able']),
@@ -70,10 +70,13 @@ function flow_edit() {
 			'act' => $requery['act'],
 			'hasAble' => $requery['hasAble'],
 			'id' => $requery['id']
-		);
+		));
 
 		$tpl = new Page($data);
-		$trans->response('100000', $tpl->fetch('lump/ruleDialog.tpl'), 'ok');
+		$trans->response('100000', array(
+			'htmlVar' => $data,
+			'html' => $tpl->fetch('lump/ruleDialog.tpl'),
+		), 'ok');
 
 	}else{
 		$trans->response($u);

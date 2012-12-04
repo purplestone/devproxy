@@ -17,7 +17,10 @@ $requery = array(
 	'src_context' => getPost('src_context'),
 	'context' => getPost('context'),
 	'src_type' => getPost('src_type'),
-	'type' => getPost('type')
+	'type' => getPost('type'),
+	'https' => fixBoolean(getPost('behttps')),
+	'host' => getPost('host'),
+	'hostType' => getPost('theHostType'),
 );
 
 if(!$requery['act']) {
@@ -43,7 +46,7 @@ function flow_add() {
 
 	$iniData = new iniData();
 
-	$apiMsg = $iniData->addSettingRule($requery['context'], $requery['type'], $requery['src'], $requery['target'], $requery['able'], $requery['befile']);
+	$apiMsg = $iniData->addSettingRule($requery['context'], $requery['type'], $requery['src'], $requery['target'], $requery['able'], $requery['befile'], $requery['https'], $requery['host'], $requery['hostType']);
 
 	if($apiMsg['code'] === '100000') {
 		//$data = array(
@@ -64,6 +67,9 @@ function flow_add() {
 			'isLocalFile' => $requery['befile'],
 			'type' => $requery['type'],
 			'context' => $requery['context'],
+			'https' => $requery['https'],
+			'host' => $requery['host'],
+			'hostType' => $requery['hostType'],
 		));
 		if(!isset($apiMsg['data']['target'])) {
 			$apiMsg['data']['target'] = $requery['target'];
@@ -75,6 +81,7 @@ function flow_add() {
 
 		$tpl = new Page($data);
 		$apiMsg['data']['html'] = $tpl->fetch('lump/settingRuleRow.tpl');
+		$apiMsg['data']['htmlVar'] = $data;
 
 
 	}
@@ -98,7 +105,7 @@ function flow_edit() {
 	if($requery['src'] === null || $requery['target'] === null) {
 		$apiMsg = $iniData->switchSettingRule($requery['id'], $requery['src_context'], $requery['src_type'], $requery['able']);
 	}else{
-		$apiMsg = $iniData->setSettingRule($requery['id'], $requery['src_context'], $requery['src_type'], $requery['context'], $requery['type'], $requery['src'], $requery['target'], $requery['able'], $requery['befile']);
+		$apiMsg = $iniData->setSettingRule($requery['id'], $requery['src_context'], $requery['src_type'], $requery['context'], $requery['type'], $requery['src'], $requery['target'], $requery['able'], $requery['befile'], $requery['https'], $requery['host'], $requery['hostType']);
 	}
 
 	if(!$apiMsg['data']) {
@@ -116,6 +123,9 @@ function flow_edit() {
 		'src_context' => $requery['src_context'],
 		'src_type' => $requery['src_type'],
 		'currentSetting' => $iniData->getCurrentSetting(),
+		'https' => $requery['https'],
+		'host' => $requery['host'],
+		'hostType' => $requery['hostType'],
 	));
 	if(!isset($apiMsg['data']['target'])) {
 		$apiMsg['data']['target'] = $requery['target'];
@@ -126,6 +136,7 @@ function flow_edit() {
 	//var_dump($data);
 	$tpl = new Page($data);
 	$apiMsg['data']['html'] = $tpl->fetch('lump/settingRuleRow.tpl');
+	$apiMsg['data']['htmlVar'] = $data;
 	$trans->response($apiMsg);
 }
 

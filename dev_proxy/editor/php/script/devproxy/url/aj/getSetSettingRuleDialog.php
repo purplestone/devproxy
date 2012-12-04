@@ -45,7 +45,10 @@ function flow_add() {
 		'isLocalFile' => $requery['beFile'],
 	);
 	$tpl = new Page($data);
-	$trans->response('100000', $tpl->fetch('lump/settingDialog.tpl'), 'ok');
+	$trans->response('100000', array(
+		'htmlVar' => $data,
+		'html' => $tpl->fetch('lump/settingDialog.tpl'),
+	), 'ok');
 }
 
 function flow_edit() {
@@ -57,7 +60,7 @@ function flow_edit() {
 	if($apiMsg['code'] == '100000') {
 
 		$u = $apiMsg['data'];
-		$data = array(
+		$data = array_merge($u, array(
 			'src' => $u['src'],
 			'target' => $u['target'],
 			'src_context' => $requery['src_context'],
@@ -66,10 +69,13 @@ function flow_edit() {
 			'isLocalFile' => $u['isLocalFile'],
 			'act' => $requery['act'],
 			'id' => $requery['id']
-		);
+		));
 
 		$tpl = new Page($data);
-		$trans->response('100000', $tpl->fetch('lump/settingDialog.tpl'), 'ok');
+		$trans->response('100000', array(
+			'htmlVar' => $data,
+			'html' => $tpl->fetch('lump/settingDialog.tpl'),
+		), 'ok');
 
 	}else{
 		$trans->response($apiMsg);

@@ -30,7 +30,8 @@
 </VirtualHost>
 
 
-#将 php.ini 中将报错设置去掉notice： error_reporting = E_ALL & ~E_NOTICE | E_STRICT
+#在 php.ini 的报错设置中将notice去掉, 找到如下配置：
+error_reporting = E_ALL & ~E_NOTICE | E_STRICT
 
 =============== 然后重启apache =================
 
