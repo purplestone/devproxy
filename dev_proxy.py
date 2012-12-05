@@ -64,7 +64,7 @@ class ProxyHandler (BaseHTTPServer.BaseHTTPRequestHandler):
 			self.__base_handle()
 
 	def _connect_to(self, netloc, soc):
-		#print('===== _connect_to =====')
+		print('===== _connect_to =====')
 		i = netloc.find(':')
 		if i >= 0:
 			host_port = netloc[:i], int(netloc[i+1:])
@@ -82,7 +82,9 @@ class ProxyHandler (BaseHTTPServer.BaseHTTPRequestHandler):
 		return 1
 
 	def do_CONNECT(self):
-		#print('===== do_CONNECT =====')
+		print('===== do_CONNECT =====')
+		#warp_path = warp_url('http://'+self.path)
+		#gpy.var_dump(warp_path)
 		soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		try:
 			if self._connect_to(self.path, soc):
@@ -114,6 +116,7 @@ class ProxyHandler (BaseHTTPServer.BaseHTTPRequestHandler):
 				return False
 
 		warp_path = warp_url(self.path)
+		#gpy.var_dump(warp_path)
 		#warp_path.str = 'E:\ggg_toy\install_rar\devproxy.ini'
 		#pdb.set_trace()
 		if warp_path.__str__() != self.path:
@@ -129,7 +132,7 @@ class ProxyHandler (BaseHTTPServer.BaseHTTPRequestHandler):
 
 		if warp_path.isLocalFile:
 			try:
-				oF = open(warp_path.__str__())
+				oF = open(warp_path.urn)
 				sHttpBody = oF.read()
 				#print(sHttpBody)
 				oF.close()
@@ -138,7 +141,7 @@ class ProxyHandler (BaseHTTPServer.BaseHTTPRequestHandler):
 				self.end_headers()
 				self.wfile.write(sHttpBody)
 			except :
-				sHttpBody = 'devpoxy error( Not Found File: ' + warp_path.__str__() +' )'
+				sHttpBody = 'devpoxy error( Not Found File: ' + warp_path.urn +' )'
 				self.send_error(404, sHttpBody)
 
 
@@ -439,19 +442,25 @@ def formatJson(sFilePath):
 
 class Url():
 	def __init__(self, s):
-		self.str = s
+		self.urn = s[s.find('://')+3:]
 		self.isLocalFile = False
-		rSearchHost = re.search(r'://([A-z0-9-_\.]+)', s)
+		self.protocol  = s[0:s.find('://')+3]
+		if not self.protocol:
+			self.protocol = 'http://'
+		rSearchHost = re.search(r'://([A-z0-9-_\.:@]+)', s)
 		if rSearchHost:
 			self.host = rSearchHost.group(1)
+		else:
+			self.host = ''
 
 	def __str__(self):
-		return self.str
-	
+		return self.protocol + self.urn
+
+
 def warp_url(sUrl):
-	#print('warp_url proxy_ini')
-	oUrl = False
-	sUrl = sUrl[sUrl.find('://')+3:];
+	#print('warp_url proxy_ini')urn
+	oUrl = Url(sUrl)
+	sUrl = oUrl.urn
 
 	for tUrl in proxy_ini:
 		#if tUrl[0][0:1] == '^':
@@ -460,19 +469,22 @@ def warp_url(sUrl):
 			#sReSrcUrl = 'http://' + tUrl[0]
 		rUrl = re.compile(tUrl[0])
 		#pdb.set_trace()
-		#gpy.var_dump((tUrl[0], sUrl))
+		gpy.var_dump((tUrl[0], sUrl))
+		gpy.var_dump(rUrl.match(sUrl))
+
 		if rUrl.match(sUrl):
 			if tUrl[2]:
 				sCDir = os.getcwd()
 				#print(sCDir)
 				sUrl = sCDir + '/devproxy_temp_file' + tUrl[1]
+				oUrl.protocol = 'file://'
 				if sUrl.find('\\') > -1:
 					sUrl = sUrl.replace('/', '\\')
 			else:
 				sReUrl = tUrl[1].replace('$', '\\')
 				#pdb.set_trace()
 				sUrl = rUrl.sub(sReUrl,sUrl)
-			oUrl = Url(sUrl)
+			oUrl.urn = sUrl
 			oUrl.isLocalFile = tUrl[2]
 			oUrl.isHttps = tUrl[3]
 			oUrl.host = tUrl[4]
