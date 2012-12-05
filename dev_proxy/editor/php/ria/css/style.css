@@ -28,7 +28,7 @@ a.localFile:link, a.localFile:visited, a.localFile:hover, a.localFile:active {co
 .dialogClose {float:right;padding: 0 6px 0 0;cursor:pointer;}
 .dialogU {clear:both;padding:0.5em 0;}
 .dialogT {float:left;width:4em;padding:0 0.5em 0 0;}
-.dialogB {float:left;}
+.dialogB {display:block;padding-left:5em;}
 .isLocalFile {line-height:2em;}
 .enableRule {float:right;}
 .dialogF {padding:1em 0;clear:both;text-align:right;}

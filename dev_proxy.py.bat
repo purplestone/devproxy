@@ -1,5 +1,5 @@
-@set inipath=E:\ggg_toy\install_rar\devproxy.ini
+@set inipath=E:\ggg_toy\dev_proxy\devproxy.ini
 @title devproxy = %inipath%
-@python E:\ggg_toy\install_rar/dev_proxy.py -i %inipath%
+@python E:\ggg_toy\dev_proxy\dev_proxy.py -i %inipath%
 @pause
 

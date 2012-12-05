@@ -126,6 +126,9 @@ class iniData {
 							'target' => $u[2],
 							'able' => $u[3],
 							'isLocalFile' => $u[4],
+							'https' => $u[5],
+							'host' => $u[6],
+							'hostType' => $u[7],
 						), '');
 						break;
 					}
@@ -232,7 +235,7 @@ class iniData {
 		$this->saveIni();
 	}
 
-	public function addRule($table, $src, $target, $able, $isLocalFile) {
+	public function addRule($table, $src, $target, $able, $isLocalFile, $isHttps, $host, $hostType) {
 		switch($table) {
 			case 'ex':
 				$data = $this->oIni->ex;
@@ -276,7 +279,8 @@ class iniData {
 		}
 		if(!isset($apiMsg)) {
 			$data->counter++;
-			$data->table[] = array($data->counter, $src, $target, !!$able, !!$isLocalFile);
+			$rowData = array($data->counter, $src, $target, !!$able, !!$isLocalFile, !!$isHttps, $host, $hostType);
+			$data->table[] = $rowData;
 
 			$apiMsg = createApiMsg('100000', array(
 				'id' => $data->counter,
@@ -345,7 +349,7 @@ class iniData {
 	}
 
 
-	public function setRule($table, $id, $src, $target, $able, $isLocalFile) {
+	public function setRule($table, $id, $src, $target, $able, $isLocalFile, $isHttps, $host, $hostType) {
 		switch($table) {
 			case 'ex':
 				$data = &$this->oIni->ex->table;
@@ -395,6 +399,9 @@ class iniData {
 				$u[2] = $target;
 				$u[3] = $able;
 				$u[4] = $isLocalFile;
+				$u[5] = $isHttps;
+				$u[6] = $host;
+				$u[7] = $hostType;
 				$apiMsg = createApiMsg('100000', array('target' => $target), 'ok');
 				$this->saveIni();
 			}else{
@@ -461,7 +468,7 @@ class iniData {
 	}
 
 
-	public function addSettingRule($context, $type, $src, $target, $able, $isLocalFile) {
+	public function addSettingRule($context, $type, $src, $target, $able, $isLocalFile, $isHttps, $host, $hostType) {
 		$apiMsg = null;
 
 		if(!$apiMsg) {
@@ -480,7 +487,7 @@ class iniData {
 			$table = &$this->oIni->condition->$context->setting->$type;
 
 			$table->counter++;
-			$table->table[] = array($table->counter, $src, $target, !!$able, !!$isLocalFile);
+			$table->table[] = array($table->counter, $src, $target, !!$able, !!$isLocalFile, !!$isHttps, $host, $hostType);
 
 			$apiMsg = createApiMsg('100000', array('id' => $table->counter), 'ok');
 
@@ -523,6 +530,9 @@ class iniData {
 					'target' => $u[2],
 					'able' => $u[3],
 					'isLocalFile' => $u[4],
+					'https' => $u[5],
+					'host' => $u[6],
+					'hostType' => $u[7],
 				), 'ok');
 			}
 		}
@@ -563,7 +573,7 @@ class iniData {
 	}
 	
 
-	public function setSettingRule($id, $src_context, $src_type, $context, $type, $src, $target, $able, $isLocalFile) {
+	public function setSettingRule($id, $src_context, $src_type, $context, $type, $src, $target, $able, $isLocalFile, $isHttps, $host, $hostType) {
 		global $debugger;
 
 		$apiMsg = null;
@@ -597,6 +607,9 @@ class iniData {
 					$u['2'] = $target;
 					$u['3'] = $able;
 					$u['4'] = $isLocalFile;
+					$u['5'] = $isHttps;
+					$u['6'] = $host;
+					$u['7'] = $hostType;
 					$this->saveIni();
 					$apiMsg = createApiMsg('100000', array(
 						'target' => $target,
