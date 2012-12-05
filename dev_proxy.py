@@ -121,10 +121,10 @@ class ProxyHandler (BaseHTTPServer.BaseHTTPRequestHandler):
 			printLog(self.server.logger, '-----------------------------------------')
 			#print(self.path)
 			printLog(self.server.logger, self.path)
-			print('--')
+			print('-----'+(('  '+ warp_path.host +'  ') if warp_path.host else '') +'-----')
 			#print(warp_path)
 			printLog(self.server.logger, warp_path)
-			print('-------  '+ warp_path.host +'  ----------------------------------')
+			print('-----------------------------------------')
 			print 
 
 		if warp_path.isLocalFile:
@@ -441,7 +441,7 @@ class Url():
 	def __init__(self, s):
 		self.str = s
 		self.isLocalFile = False
-		rSearchHost = re.search(r'\/\/([^/]+)', s)
+		rSearchHost = re.search(r'://([A-z0-9-_\.]+)', s)
 		if rSearchHost:
 			self.host = rSearchHost.group(1)
 
@@ -451,19 +451,26 @@ class Url():
 def warp_url(sUrl):
 	#print('warp_url proxy_ini')
 	oUrl = False
+	sUrl = sUrl[sUrl.find('://')+3:];
 
 	for tUrl in proxy_ini:
-		sReSrcUrl = 'http://' + tUrl[0]
-		if tUrl[0][0:1] == '^':
-			sReSrcUrl = '^' + sReSrcUrl
-		rUrl = re.compile(sReSrcUrl)
+		#if tUrl[0][0:1] == '^':
+			#sReSrcUrl = '^http://' + tUrl[0][1:]
+		#else:
+			#sReSrcUrl = 'http://' + tUrl[0]
+		rUrl = re.compile(tUrl[0])
+		#pdb.set_trace()
+		#gpy.var_dump((tUrl[0], sUrl))
 		if rUrl.match(sUrl):
 			if tUrl[2]:
 				sCDir = os.getcwd()
 				#print(sCDir)
 				sUrl = sCDir + '/devproxy_temp_file' + tUrl[1]
+				if sUrl.find('\\') > -1:
+					sUrl = sUrl.replace('/', '\\')
 			else:
-				sReUrl = 'http://'+tUrl[1].replace('$', '\\')
+				sReUrl = tUrl[1].replace('$', '\\')
+				#pdb.set_trace()
 				sUrl = rUrl.sub(sReUrl,sUrl)
 			oUrl = Url(sUrl)
 			oUrl.isLocalFile = tUrl[2]
@@ -477,6 +484,7 @@ def warp_url(sUrl):
 	if not oUrl:
 		oUrl = Url(sUrl)
 	#pdb.set_trace()
+	#print(sUrl)
 	return oUrl
 
 def printLog(obj, str):
