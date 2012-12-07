@@ -48,7 +48,10 @@ function flow_add() {
 		'islocalFile' => false,
 	);
 	$tpl = new Page($data);
-	$trans->response('100000', $tpl->fetch('lump/ruleDialog.tpl'), 'ok');
+	$trans->response('100000', array(
+		"htmlVar" => $data,
+		"html" => $tpl->fetch('lump/ruleDialog.tpl')
+	), 'ok');
 }
 
 function flow_edit() {

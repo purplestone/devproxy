@@ -83,12 +83,24 @@ class ProxyHandler (BaseHTTPServer.BaseHTTPRequestHandler):
 
 	def do_CONNECT(self):
 		print('===== do_CONNECT =====')
-		#warp_path = warp_url('http://'+self.path)
-		#gpy.var_dump(warp_path)
+		warp_path = warp_url('https://'+self.path)
+		gpy.var_dump(warp_path)
 		soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		gpy.var_dump((socket.AF_INET, socket.SOCK_STREAM))
+		gpy.var_dump((self.path, soc))
+		gpy.var_dump((warp_path.urn, soc))
+		if warp_path.urn != self.path:
+			print 
+			printLog(self.server.logger, '-----------------------------------------')
+			#print(self.path)
+			printLog(self.server.logger, self.path)
+			print('----------')
+			#print(warp_path)
+			printLog(self.server.logger, warp_path.urn)
+			print('-----------------------------------------')
+			print 
 		try:
-			if self._connect_to(self.path, soc):
-				gpy.var_dump((self.path, soc))
+			if self._connect_to(warp_path.urn, soc):
 				self.log_request(200)
 				self.wfile.write(self.protocol_version +
 								 " 200 Connection established\r\n")
@@ -462,17 +474,25 @@ def warp_url(sUrl):
 	oUrl = Url(sUrl)
 	sUrl = oUrl.urn
 
+	print('def warp_url')
 	for tUrl in proxy_ini:
 		#if tUrl[0][0:1] == '^':
 			#sReSrcUrl = '^http://' + tUrl[0][1:]
 		#else:
 			#sReSrcUrl = 'http://' + tUrl[0]
-		rUrl = re.compile(tUrl[0])
+		#pdb.set_trace()
+		if tUrl[3]:
+			if not re.compile('^.+:\d').match(tUrl[0]):
+				tUrl[0] = tUrl[0] + ':443'
+		rUrl = re.compile(tUrl[0] + '$')
 		#pdb.set_trace()
 		gpy.var_dump((tUrl[0], sUrl))
 		gpy.var_dump(rUrl.match(sUrl))
 
 		if rUrl.match(sUrl):
+			oUrl.isLocalFile = tUrl[2]
+			oUrl.isHttps = tUrl[3]
+			oUrl.host = tUrl[4]
 			if tUrl[2]:
 				sCDir = os.getcwd()
 				#print(sCDir)
@@ -483,11 +503,11 @@ def warp_url(sUrl):
 			else:
 				sReUrl = tUrl[1].replace('$', '\\')
 				#pdb.set_trace()
+				print('rUrl.sub')
+				gpy.var_dump(rUrl.pattern)
+				gpy.var_dump((sReUrl,sUrl))
 				sUrl = rUrl.sub(sReUrl,sUrl)
 			oUrl.urn = sUrl
-			oUrl.isLocalFile = tUrl[2]
-			oUrl.isHttps = tUrl[3]
-			oUrl.host = tUrl[4]
 			break
 	#return sUrl
 	#print('%%%%%')
